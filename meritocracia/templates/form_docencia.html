@@ -1,0 +1,62 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Docencia</title>
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Registro de Docencia</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_docencia' %}" method="POST" class="form">
+            {% csrf_token %}
+
+            <!-- Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Curso -->
+            <label for="curso">Curso:</label>
+            <input type="text" id="curso" name="curso" required class="input">
+
+            <!-- Universidad -->
+            <label for="universidad">Universidad:</label>
+            <input type="text" id="universidad" name="universidad" required class="input">
+
+            <!-- Año -->
+            <label for="anio">Año:</label>
+            <input type="number" id="anio" name="anio" required class="input" min="2017" max="2025">
+
+            <!-- Horas -->
+            <label for="horas">Horas dictadas:</label>
+            <input type="number" id="horas" name="horas" required class="input" onchange="calcularPuntaje()">
+
+            <!-- Puntaje calculado (solo visual) -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">0.0</span></p>
+
+            <input type="submit" value="Registrar Docencia" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            const horas = document.getElementById("horas").value;
+            const puntaje = parseFloat(horas) * 0.375;
+            document.getElementById("puntaje_mostrar").innerText = isNaN(puntaje) ? "0.0" : puntaje.toFixed(3);
+        }
+
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

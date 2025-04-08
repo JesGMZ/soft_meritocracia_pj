@@ -1,0 +1,66 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'admin.css' %}">
+    <title>MERITOCRACIA</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <!-- Contenido principal -->
+    <div class="container">
+
+        <!-- Card para la tabla de Top 5 Jueces -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Top 5 Jueces con Mayor Puntaje Total</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Juez</th>
+                            <th>Puntaje Total</th>
+                            <th>ID Juez</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for juez in jueces_top_5 %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ juez.juez.nombres }}</td>
+                            <td>{{ juez.puntaje_total }}</td>
+                            <td>{{ juez.juez.id_juez }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Card para la cantidad de registros de jueces (disposición horizontal) -->
+        <div class="card horizontal-card">
+            <div class="card-header">
+                <h3>Cantidad de Registros de Jueces</h3>
+            </div>
+            <div class="card-body">
+                <h2>{{ cantidad_jueces }}</h2>
+            </div>
+        </div>
+
+        <!-- Card para la consulta de registros -->
+        <a href="{% url 'buscar_juez' %}" class="card mt-3">
+            <img src="{% static 'icons/icon_consulta.png' %}" alt="Consulta de Registros">
+            <span>Consulta de Registros</span>
+        </a>
+
+    </div>
+
+</body>
+</html>

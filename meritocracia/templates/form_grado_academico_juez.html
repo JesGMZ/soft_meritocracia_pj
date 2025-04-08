@@ -1,0 +1,88 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <title>Registro de Grado Académico</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Registro de Grado Académico</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_grado_academico' %}" method="POST" class="form" enctype="multipart/form-data">
+            {% csrf_token %}
+        
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
+                {% endfor %}
+            </select>
+        
+            <label for="tipo">Tipo de Grado Académico:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="calcularPuntaje()">
+                <option value="DOJ">Doctorado en especialidad jurídica</option>
+                <option value="DONJ">Doctorado en especialidad no jurídica</option>
+                <option value="MAJ">Maestría en especialidad jurídica</option>
+                <option value="MANJ">Maestría en especialidad no jurídica</option>
+                <option value="TINJ">Título en especialidad no jurídica</option>
+            </select>
+        
+            <label for="titulo_gd">Título del grado académico:</label>
+            <input type="text" id="titulo_gd" name="titulo_gd" required class="input">
+
+            <label for="anio">Año de Obtención:</label>
+            <input type="number" id="anio" name="anio" required class="input">
+    
+            <input type="hidden" id="puntaje" name="puntaje">
+            <div>Puntaje asignado: <span id="puntaje_mostrar">0</span></div>
+
+            <!-- Campo para subir documento -->
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+        
+            <input type="submit" value="Registrar Grado Académico" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            let tipo = document.getElementById("tipo").value;
+            let puntaje = 0;
+
+            switch (tipo) {
+                case "DOJ":
+                    puntaje = 9;
+                    break;
+                case "DONJ":
+                    puntaje = 6;
+                    break;
+                case "MAJ":
+                    puntaje = 4;
+                    break;
+                case "MANJ":
+                    puntaje = 3;
+                    break;
+                case "TINJ":
+                    puntaje = 2;
+                    break;
+                default:
+                    puntaje = 0;
+            }
+
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+
+        // Ejecutar al cargar la página
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

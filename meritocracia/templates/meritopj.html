@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'pagina_main.css' %}">
+    <title>MERITOCRACIA</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %} 
+    
+    <a href="{% url 'admin_view' %}" class="card">
+        <span>Vista Administrador</span>
+    </a>
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <a href="{% url 'registrar_juez' %}" class="card">
+            <img src="{% static 'icons/icon_juez.png' %}" alt="Juez">
+            <span>Registro de Jueces</span>
+        </a>
+
+        <a href="{% url 'registrar_estudios_magistratura' %}" class="card">
+            <img src="{% static 'icons/icon_magistratura.png' %}" alt="Estudios">
+            <span>Registro de Estudios de Magistratura</span>
+        </a>
+
+        <a href="{% url 'registrar_grado_academico' %}" class="card">
+            <img src="{% static 'icons/icon_gradoacad.png' %}" alt="Grado Académico">
+            <span>Registro de Grados Académicos</span>
+        </a>
+
+        <a href="{% url 'registrar_antiguedad' %}" class="card">
+            <img src="{% static 'icons/icon_antiguedad.png' %}" alt="Antigüedad">
+            <span>Registro de Antigüedad</span>
+        </a>
+
+        <a href="{% url 'registrar_estudio_perfeccionamiento' %}" class="card">
+            <img src="{% static 'icons/icon_perfeccionamiento.png' %}" alt="Estudio de Perfeccionamiento">
+            <span>Registro de Estudios de Perfeccionamiento</span>
+        </a>
+
+        <a href="{% url 'registrar_publicacion_juridica' %}" class="card">
+            <img src="{% static 'icons/icon_publicacion.png' %}" alt="Publicacion Juridica">
+            <span>Registro de Publicacion Juridica</span>
+        </a>
+
+        <a href="{% url 'registrar_distincion' %}" class="card">
+            <img src="{% static 'icons/icon_distincion.png' %}" alt="Distincion">
+            <span>Registro de Disticiones y Condecoraciones</span>
+        </a>
+
+        <a href="{% url 'registrar_docencia' %}" class="card">
+            <img src="{% static 'icons/icon_docencia.png' %}" alt="Docencia">
+            <span>Registro de Docencia</span>
+        </a>
+    </div>
+
+</body>
+</html>

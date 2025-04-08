@@ -1,0 +1,82 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <title>Registro de Certamen Académico</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}  <!-- Se incluye el navbar -->
+
+    <h2>Registro de Certamen Académico</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_certamen_academico' %}" method="POST" class="form">
+
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Selección de Estudio de Perfeccionamiento (valor oculto) -->
+            <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="5">
+
+            <!-- Tipo de Participación -->
+            <label for="tipo_participacion">Tipo de Participación:</label>
+            <select id="tipo_participacion" name="tipo_participacion" required class="input">
+                <option value="Expositor">Expositor</option>
+                <option value="Ponente">Ponente</option>
+                <option value="Panelista">Panelista</option>
+            </select>
+
+            <!-- Nombre del Certamen -->
+            <label for="nombre">Nombre del Certamen:</label>
+            <input type="text" id="nombre" name="nombre" required class="input">
+
+            <!-- Tipo del Certamen (Nacional o Internacional) -->
+            <label for="tipo">Tipo de Certamen:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="calcularPuntaje()">
+                <option value="Nacional">Nacional</option>
+                <option value="Internacional">Internacional</option>
+            </select>
+
+            <!-- Año del Certamen -->
+            <label for="anio">Año del Certamen:</label>
+            <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025">
+
+            <!-- Campo oculto para Puntaje (se calculará automáticamente) -->
+            <input type="hidden" id="puntaje" name="puntaje">
+
+            <!-- Mostrar Puntaje Calculado -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">0.25</span></p>
+
+            <input type="submit" value="Registrar Certamen Académico" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        // Función para calcular el puntaje según el tipo de certamen
+        function calcularPuntaje() {
+            let tipo = document.getElementById("tipo").value;
+            let puntaje = (tipo === "Internacional") ? 0.5 : 0.25;
+
+            // Asignar el puntaje al campo oculto y mostrarlo en pantalla
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+
+        // Llamar a la función al cargar la página para mostrar el puntaje inicial
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

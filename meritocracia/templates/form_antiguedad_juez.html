@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <title>Registro de Antigüedad</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %} 
+
+    <h2>Registro de Antigüedad</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_antiguedad' %}" method="POST" class="form">
+            {% csrf_token %}
+            
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
+                {% endfor %}
+            </select>
+        
+            <label for="fecha_inicio">Fecha de Inicio:</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" required class="input">
+        
+            <label for="fecha_fin">Fecha de Finalización:</label>
+            <input type="date" id="fecha_fin" name="fecha_fin" class="input">
+        
+            <input type="hidden" id="puntaje" name="puntaje" value="1">
+        
+            <input type="submit" value="Registrar Antigüedad" class="login-button">
+        </form>
+    </div>
+
+</body>
+</html>
+

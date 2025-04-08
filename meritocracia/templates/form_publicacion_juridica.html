@@ -1,0 +1,76 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <title>Registro de Publicación Jurídica</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Registro de Publicación Jurídica</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_publicacion_juridica' %}" method="POST" class="form">
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Tipo de Publicación -->
+            <label for="tipo">Tipo de Publicación:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="calcularPuntaje()">
+                <option value="LIBRO">Libro</option>
+                <option value="REVISTA">Revista</option>
+                <option value="MERITO">Publicación con mérito</option>
+            </select>
+
+            <!-- Nombre de la Publicación -->
+            <label for="nombre">Nombre de la Publicación:</label>
+            <input type="text" id="nombre" name="nombre" required class="input">
+
+            <!-- Campo oculto para el puntaje -->
+            <input type="hidden" id="puntaje" name="puntaje">
+
+            <!-- Mostrar Puntaje Calculado -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">2.0</span></p>
+
+            <input type="submit" value="Registrar Publicación Jurídica" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            const tipo = document.getElementById("tipo").value;
+            let puntaje = 0;
+
+            switch (tipo) {
+                case "LIBRO":
+                    puntaje = 1.5;
+                    break;
+                case "REVISTA":
+                    puntaje = 0.5;
+                    break;
+                case "MERITO":
+                    puntaje = 1;
+                    break;
+            }
+
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Distribuye los elementos de forma uniforme */
+    align-items: center;
+    width: 100%;
+    padding: 15px 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-sizing: border-box; /* Evita que los padding afecten el ancho */
+}
+
+/* Ajuste para que el body no quede detrás del navbar */
+body {
+    padding-top: 70px; /* Ajuste dinámico según la altura del navbar */
+    margin: 0; /* Evita márgenes no deseados */
+}
+
+/* Estilos del título dentro del navbar */
+.navbar h1 {
+    font-size: 1.8em;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Contenedor de los botones */
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-right: 20px; /* Asegura que no se desplace demasiado */
+}
+
+/* Estilos de los botones */
+.nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Iconos de los botones */
+.nav-btn img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover en los botones */
+.nav-btn:hover img {
+    opacity: 0.7;
+    transform: scale(1.1);
+}

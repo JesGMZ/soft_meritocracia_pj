@@ -1,0 +1,326 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Juez y Detalles</title>
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <link rel="stylesheet" href="{% static 'tablas.css' %}">
+ 
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Consultar Registros</h2>
+
+    <div class="container">
+        <form method="POST" action="{% url 'buscar_juez' %}" class="form">
+            {% csrf_token %}
+            <label for="juez_id">Seleccionar Juez:</label>
+            <select id="juez_id" name="juez_id" class="input" required>
+                <option value="">Seleccione un juez</option>
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}">{{ juez.nombres }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Buscar" class="login-button">
+        </form>
+    </div>
+
+    {% if datos %}
+        <h2>Análisis del Juez</h2>
+
+        <div class="card">
+
+            <!-- Nombre -->
+            <div class="card-item">
+                <div class="block-item columna">
+                    <div class="titulo-section">Nombre:</div>
+                    <div class="contenido">{{ datos.juez.nombres }} {{ datos.juez.apellidos }}</div>
+                </div>
+            </div>
+
+            <!-- Fecha de nacimiento -->
+            <div class="card-item">
+                <div class="block-item columna">
+                    <div class="titulo-section">Fecha de Nacimiento:</div>
+                    <div class="contenido">{{ datos.juez.fecha_nacimiento }}</div>
+                </div>
+            </div>
+
+            <div class="card-item">
+                <div class="block-item columna">
+                    <div class="titulo-section">Cargo:</div>
+                    <div class="contenido">{{ datos.juez.cargo }}</div>
+                </div>
+            </div>
+
+            <!-- Antigüedad -->
+            <div class="card-item">
+                <div class="titulo-section">Antigüedad:</div>
+                {% if datos.antiguedad %}
+                    {% for antiguedad in datos.antiguedad %}
+                        <div class="block-item">
+                            <div class="contenido">{{ antiguedad.fecha_inicio }} - {{ antiguedad.fecha_fin }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Grado Académico -->
+            <div class="card-item">
+                <div class="titulo-section">Grado Académico:</div>
+                {% if datos.grado_academico %}
+                    {% for grado in datos.grado_academico %}
+                        <div class="block-item">
+                            <div class="contenido">{{ grado.tipo}} - {{ grado.titulo_gd }} </div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Estudios de Magistratura:</div>
+                {% if datos.estudios_magistratura %}
+                    {% for estudio in datos.estudios_magistratura %}
+                        <div class="block-item">
+                            <div class="contenido">{{ estudio.programa }} - {{ estudio.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Estudios de Doctorado:</div>
+                {% if datos.estudios_doctorado %}
+                    {% for doctorado in datos.estudios_doctorado %}
+                        <div class="block-item">
+                            <div class="contenido">{{ doctorado.nombre }} - {{ doctorado.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="card-item">
+                <div class="titulo-section">Estudios de Maestría:</div>
+                {% if datos.estudios_maestria %}
+                    {% for maestria in datos.estudios_maestria %}
+                        <div class="block-item">
+                            <div class="contenido">{{ maestria.nombre }} - {{ maestria.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Pasantías:</div>
+                {% if datos.pasantias %}
+                    {% for pasantia in datos.pasantias %}
+                        <div class="block-item">
+                            <div class="contenido">{{ pasantia.nombre }} ({{ pasantia.tipo }}) - {{ pasantia.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Cursos de Especialización:</div>
+                {% if datos.cursos_especializacion %}
+                    {% for curso in datos.cursos_especializacion %}
+                        <div class="block-item">
+                            <div class="contenido">{{ curso.nombre }} - {{ curso.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Certámenes Académicos:</div>
+                {% if datos.certamenes_academicos %}
+                    {% for certamen in datos.certamenes_academicos %}
+                        <div class="block-item">
+                            <div class="contenido">{{ certamen.nombre }} - {{ certamen.tipo_participacion }} ({{ certamen.tipo }}) - {{ certamen.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Eventos Académicos:</div>
+                {% if datos.eventos_academicos %}
+                    {% for evento in datos.eventos_academicos %}
+                        <div class="block-item">
+                            <div class="contenido">{{ evento.nombre }} - {{ evento.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Estudios de Ofimática:</div>
+                {% if datos.estudios_ofimatica %}
+                    {% for ofimatica in datos.estudios_ofimatica %}
+                        <div class="block-item">
+                            <div class="contenido">{{ ofimatica.estudio }} - {{ ofimatica.nivel }} - {{ ofimatica.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Estudios de Idiomas:</div>
+                {% if datos.estudios_idiomas %}
+                    {% for idioma in datos.estudios_idiomas %}
+                        <div class="block-item">
+                            <div class="contenido">{{ idioma.estudio }} - {{ idioma.nivel }} - {{ idioma.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+                        
+            <!-- Publicaciones -->
+            <div class="card-item">
+                <div class="titulo-section">Publicaciones:</div>
+                {% if datos.publicaciones %}
+                    {% for publicacion in datos.publicaciones %}
+                        <div class="block-item">
+                            <div class="contenido">{{ publicacion.nombre }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Distinciones -->
+            <div class="card-item">
+                <div class="titulo-section">Distinciones:</div>
+                {% if datos.distinciones %}
+                    {% for distincion in datos.distinciones %}
+                        <div class="block-item">
+                            <div class="contenido">{{ distincion.nombre }} - {{ distincion.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Experiencia en Docencia:</div>
+                {% if datos.docencias %}
+                    {% for docencia in datos.docencias %}
+                        <div class="block-item">
+                            <div class="contenido">{{ docencia.curso }} - {{ docencia.universidad }} - {{ docencia.horas }} horas - {{ docencia.anio }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Demeritos:</div>
+                {% if datos.demeritos %}
+                    {% for demerito in datos.demeritos %}
+                        <div class="block-item">
+                            <div class="contenido">{{ demerito.medida_disciplinaria }} - {{ demerito.tipo }}</div>
+                            <button class="btn-examinar">Examinar</button>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-item">
+                <div class="titulo-section">Puntaje Total:</div>
+                {% if datos.puntaje_total %}
+                    <div class="block-item">
+                        <div class="contenido">{{ datos.puntaje_total.puntaje_total }}</div>
+                        <button class="btn-examinar">Examinar</button>
+                    </div>
+                {% else %}
+                    <div class="block-item">
+                        <div class="contenido">No disponible</div>
+                    </div>
+                {% endif %}
+            </div>
+            
+
+        </div>
+
+    {% elif error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+/* Estilos para las tarjetas (cards) */
+.card {
+    width: 100%;
+    max-width: 750px;
+    margin-top: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.card-item {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.card-item:last-child {
+    border-bottom: none;
+}
+
+.card-item strong {
+    color: #1059A9;
+    font-size: 16px;
+}
+
+.card-item p {
+    font-size: 14px;
+    color: #555555;
+}
+
+/* Estilos para los bloques */
+.block-item {
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.block-item p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.examinar-button {
+    background-color: #1059A9;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.examinar-button:hover {
+    background-color: #0b4797;
+}
+
+.card-item {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-left: 4px solid #1059A9;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin: 10px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.card-item:hover {
+    transform: scale(1.01);
+}
+
+.btn-examinar {
+    background-color: #1059A9;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-examinar:hover {
+    background-color: #0d3f7a;
+}
+
+.card-item span {
+    font-size: 15px;
+    color: #333;
+}

@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'pagina_main.css' %}">
+    <title>MERITOCRACIA</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %} 
+    
+    <!-- Contenido principal -->
+    <div class="container">
+        <a href="{% url 'registrar_doctorado' %}" class="card">
+            <img src="{% static 'icons/icon_doctorado.png' %}" alt="Juez">
+            <span>Registro de Estudios por Doctorado</span>
+        </a>
+
+        <a href="{% url 'registrar_maestria' %}" class="card">
+            <img src="{% static 'icons/icon_maestria.png' %}" alt="Estudios">
+            <span>Registro de Estudios por Maestría</span>
+        </a>
+
+        <a href="{% url 'registrar_pasantia' %}" class="card">
+            <img src="{% static 'icons/icon_pasantia.png' %}" alt="Grado Académico">
+            <span>Registro de Pasantías</span>
+        </a>
+
+        <a href="{% url 'registrar_curso_especializacion' %}" class="card">
+            <img src="{% static 'icons/icon_especializacion.png' %}" alt="Antigüedad">
+            <span>Registro de Cursos de Especialización</span>
+        </a>
+
+        <a href="{% url 'registrar_certamen_academico' %}" class="card">
+            <img src="{% static 'icons/icon_certamenes.png' %}" alt="Estudio de Perfeccionamiento">
+            <span>Registro de Certámenes Académicos</span>
+        </a>
+
+        <a href="{% url 'registrar_evento_academico' %}" class="card">
+            <img src="{% static 'icons/icon_evento.png' %}" alt="Estudio de Perfeccionamiento">
+            <span>Registro de Eventos Académicos</span>
+        </a>
+
+        <a href="{% url 'registrar_estudio_ofimatica' %}" class="card">
+            <img src="{% static 'icons/icon_ofimatica.png' %}" alt="Estudio de Perfeccionamiento">
+            <span>Registro de Estudios de Ofimática</span>
+        </a>
+
+        <a href="{% url 'registrar_estudio_idiomas' %}" class="card">
+            <img src="{% static 'icons/icon_idioma.png' %}" alt="Estudio de Perfeccionamiento">
+            <span>Registro de Estudios de Idiomas</span>
+        </a>
+    </div>
+
+</body>
+</html>

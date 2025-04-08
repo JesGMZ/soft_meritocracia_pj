@@ -1,0 +1,73 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <title>Registro de Estudio de Maestria</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %} 
+
+    <h2>Registro de Estudio de Maestria</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_maestria' %}" method="POST" class="form">
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Selección de Estudio de Perfeccionamiento -->
+            <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="2">
+
+            <!-- Nombre del Estudio -->
+            <label for="nombre">Nombre del Estudio:</label>
+            <input type="text" id="nombre" name="nombre" required class="input">
+            
+
+            <!-- Año de obtención -->
+            <label for="anio">Año de Obtención:</label>
+            <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025">
+
+            <!-- Nota -->
+            <label for="nota">Nota:</label>
+            <input type="number" id="nota" name="nota" step="0.1" required class="input" oninput="calcularPuntaje()">
+
+            <!-- Campo oculto para Puntaje (se calculará automáticamente) -->
+            <input type="hidden" id="puntaje" name="puntaje">
+
+            <!-- Muestra el puntaje calculado al usuario -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">0.5</span></p>
+
+            <input type="submit" value="Registrar Estudio de Maestria" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            let nota = parseFloat(document.getElementById("nota").value);
+            let puntaje = 0.5;  // Valor por defecto si la nota es menor a 15
+
+            if (nota >= 15 && nota <= 18) {
+                puntaje = 0.75;
+            } else if (nota > 18) {
+                puntaje = 1;
+            }
+
+            // Asignar el puntaje al campo oculto y mostrarlo en pantalla
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+    </script>
+
+</body>
+</html>
