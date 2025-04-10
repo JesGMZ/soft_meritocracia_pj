@@ -1,0 +1,85 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Edición de Publicación Jurídica</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Edición de Publicación Jurídica</h2>
+
+    <div class="container">
+        <form action="{% url 'editar_publicacion_juridica' publicacion.id_publicacionjuridica %}" enctype="multipart/form-data" method="POST" class="form">
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if juez.id_juez == publicacion.juez.id_juez %} selected {% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Tipo de Publicación -->
+            <label for="tipo">Tipo de Publicación:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="calcularPuntaje()">
+                <option value="LIBRO" {% if publicacion.tipo == 'LIBRO' %} selected {% endif %}>Libro</option>
+                <option value="REVISTA" {% if publicacion.tipo == 'REVISTA' %} selected {% endif %}>Revista</option>
+                <option value="MERITO" {% if publicacion.tipo == 'MERITO' %} selected {% endif %}>Publicación con mérito</option>
+            </select>
+
+            <!-- Nombre de la Publicación -->
+            <label for="nombre">Nombre de la Publicación:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ publicacion.nombre }}" required class="input">
+
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+
+            {% if publicacion and publicacion.documento %}
+            <p>Documento actual: <a href="{{ publicacion.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+
+            <!-- Campo oculto para el puntaje -->
+            <input type="hidden" id="puntaje" name="puntaje" value="{{ publicacion.puntaje }}">
+
+            <!-- Mostrar Puntaje Calculado -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">{{ publicacion.puntaje }}</span></p>
+
+            <input type="submit" value="Actualizar Publicación Jurídica" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            const tipo = document.getElementById("tipo").value;
+            let puntaje = 0;
+
+            switch (tipo) {
+                case "LIBRO":
+                    puntaje = 1.5;
+                    break;
+                case "REVISTA":
+                    puntaje = 0.5;
+                    break;
+                case "MERITO":
+                    puntaje = 1;
+                    break;
+            }
+
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

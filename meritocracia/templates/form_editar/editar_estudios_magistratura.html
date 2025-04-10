@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Estudios de la Academia de Magistratura</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %} 
+
+    <h2>Editar Estudios de la Academia de Magistratura</h2>
+
+    <div class="container">
+        <form 
+            action="{% url 'editar_estudios_magistratura' estudio.id_estudiomagistratura %}" 
+            method="POST" class="form" enctype="multipart/form-data">
+            {% csrf_token %}
+        
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if estudio and estudio.juez.id_juez == juez.id_juez %}selected{% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+        
+            <label for="programa">Programa de Magistratura:</label>
+            <input type="text" id="programa" name="programa" required class="input"
+                value="{{ estudio.programa|default_if_none:'' }}">
+        
+            <label for="anio">Año de Estudio:</label>
+            <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025"
+                value="{{ estudio.anio|default_if_none:'' }}">
+        
+            <label for="nota">Nota:</label>
+            <input type="number" id="nota" name="nota" step="0.1" min="0" max="20" required class="input"
+                value="{{ estudio.nota|default_if_none:'' }}">
+        
+            <label for="documento">Documento (PDF):</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+        
+            {% if estudio and estudio.documento %}
+                <p>Documento actual: <a href="{{ estudio.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+        
+            <input type="submit" value="Actualizar Estudios de Magistratura" class="login-button">
+        </form>
+    </div>
+
+</body>
+</html>

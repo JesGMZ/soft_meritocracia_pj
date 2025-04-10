@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Buscar Juez y Detalles</title>
-    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
     <link rel="stylesheet" href="{% static 'tablas.css' %}">
  
 </head>
@@ -79,8 +79,14 @@
                 {% if datos.grado_academico %}
                     {% for grado in datos.grado_academico %}
                         <div class="block-item">
-                            <div class="contenido">{{ grado.tipo}} - {{ grado.titulo_gd }} </div>
-                            <button class="btn-examinar">Examinar</button>
+                            <div class="contenido">{{ grado.tipo }} - {{ grado.titulo_gd }} </div>
+            
+                            {% if grado.id_gradoacademico %}
+                            <a href="{% url 'editar_grado_academico' id_gradoacademico=grado.id_gradoacademico %}" class="btn-examinar">Examinar</a>
+                        {% else %}
+                            <p><strong>Error:</strong> ID no disponible</p>
+                        {% endif %}
+                        
                         </div>
                     {% endfor %}
                 {% else %}
@@ -89,6 +95,7 @@
                     </div>
                 {% endif %}
             </div>
+            
 
             <div class="card-item">
                 <div class="titulo-section">Estudios de Magistratura:</div>
@@ -96,7 +103,12 @@
                     {% for estudio in datos.estudios_magistratura %}
                         <div class="block-item">
                             <div class="contenido">{{ estudio.programa }} - {{ estudio.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+            
+                            {% if estudio.id_estudiomagistratura %}
+                                <a href="{% url 'editar_estudios_magistratura' estudio.id_estudiomagistratura %}" class="btn-examinar">Examinar</a>
+                            {% else %}
+                                <p><strong>Error:</strong> ID no disponible</p>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -105,14 +117,19 @@
                     </div>
                 {% endif %}
             </div>
+                      
 
             <div class="card-item">
                 <div class="titulo-section">Estudios de Doctorado:</div>
-                {% if datos.estudios_doctorado %}
-                    {% for doctorado in datos.estudios_doctorado %}
+                {% if datos.doctorados %}
+                    {% for doctorado in datos.doctorados%}
                         <div class="block-item">
                             <div class="contenido">{{ doctorado.nombre }} - {{ doctorado.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            {% if doctorado.id_estudiodoctorado %}
+                                <a href="{% url 'editar_doctorado' doctorado.id_estudiodoctorado %}" class="btn-examinar">Examinar</a>
+                            {% else %}
+                                <p><strong>Error:</strong> ID no disponible</p>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -124,11 +141,15 @@
             
             <div class="card-item">
                 <div class="titulo-section">Estudios de Maestría:</div>
-                {% if datos.estudios_maestria %}
-                    {% for maestria in datos.estudios_maestria %}
+                {% if datos.maestrias %}
+                    {% for maestria in datos.maestrias %}
                         <div class="block-item">
                             <div class="contenido">{{ maestria.nombre }} - {{ maestria.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            {% if maestria.id_estudiomaestria %}
+                                <a href="{% url 'editar_maestria' maestria.id_estudiomaestria %}" class="btn-examinar">Examinar</a>
+                            {% else %}
+                                <p><strong>Error:</strong> ID no disponible</p>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -144,7 +165,9 @@
                     {% for pasantia in datos.pasantias %}
                         <div class="block-item">
                             <div class="contenido">{{ pasantia.nombre }} ({{ pasantia.tipo }}) - {{ pasantia.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            {% if pasantia.id_pasantia %}
+                                <a href="{% url 'editar_pasantia' pasantia.id_pasantia %}" class="btn-examinar">Examinar</a>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -153,62 +176,80 @@
                     </div>
                 {% endif %}
             </div>
-
+            
             <div class="card-item">
                 <div class="titulo-section">Cursos de Especialización:</div>
+            
                 {% if datos.cursos_especializacion %}
                     {% for curso in datos.cursos_especializacion %}
                         <div class="block-item">
-                            <div class="contenido">{{ curso.nombre }} - {{ curso.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            <div class="contenido">
+                                {{ curso.nombre }} - {{ curso.anio }}
+                            </div>
+                            <a href="{% url 'editar_curso_especializacion' curso.id_cursoespecializacion %}" class="btn-examinar">
+                                Examinar
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
                     <div class="block-item">
-                        <div class="contenido">No disponible</div>
+                        <div class="contenido">No hay cursos registrados.</div>
                     </div>
                 {% endif %}
             </div>
+            
 
             <div class="card-item">
                 <div class="titulo-section">Certámenes Académicos:</div>
+            
                 {% if datos.certamenes_academicos %}
                     {% for certamen in datos.certamenes_academicos %}
                         <div class="block-item">
-                            <div class="contenido">{{ certamen.nombre }} - {{ certamen.tipo_participacion }} ({{ certamen.tipo }}) - {{ certamen.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            <div class="contenido">
+                                {{ certamen.nombre }} - {{ certamen.tipo_participacion }} ({{ certamen.tipo }}) - {{ certamen.anio }}
+                            </div>
+                            <a href="{% url 'editar_certamen_academico' certamen.id_certamenacademico %}" class="btn-examinar">
+                                Examinar
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
                     <div class="block-item">
-                        <div class="contenido">No disponible</div>
+                        <div class="contenido">No hay certámenes registrados.</div>
                     </div>
                 {% endif %}
             </div>
-
+            
             <div class="card-item">
                 <div class="titulo-section">Eventos Académicos:</div>
                 {% if datos.eventos_academicos %}
                     {% for evento in datos.eventos_academicos %}
                         <div class="block-item">
                             <div class="contenido">{{ evento.nombre }} - {{ evento.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
-                        </div>
+                            <a href="{% url 'editar_evento_academico' evento.id_eventoacademico %}" class="btn-examinar">
+                                Examinar
+                            </a>
+                        </div> 
                     {% endfor %}
                 {% else %}
                     <div class="block-item">
                         <div class="contenido">No disponible</div>
                     </div>
                 {% endif %}
-            </div>
+            </div> 
+            
 
             <div class="card-item">
                 <div class="titulo-section">Estudios de Ofimática:</div>
-                {% if datos.estudios_ofimatica %}
-                    {% for ofimatica in datos.estudios_ofimatica %}
+                {% if datos.ofimatica %}
+                    {% for ofimatica in datos.ofimatica %}
                         <div class="block-item">
-                            <div class="contenido">{{ ofimatica.estudio }} - {{ ofimatica.nivel }} - {{ ofimatica.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            <div class="contenido">
+                                {{ ofimatica.estudio }} - {{ ofimatica.nivel }} - {{ ofimatica.anio }}
+                            </div>
+                            <a href="{% url 'editar_estudio_ofimatica' ofimatica.id_ofimatica %}" class="btn-examinar">
+                                Examinar
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -217,14 +258,17 @@
                     </div>
                 {% endif %}
             </div>
+            
 
             <div class="card-item">
                 <div class="titulo-section">Estudios de Idiomas:</div>
-                {% if datos.estudios_idiomas %}
-                    {% for idioma in datos.estudios_idiomas %}
+                {% if datos.idiomas %}
+                    {% for idioma in datos.idiomas %}
                         <div class="block-item">
                             <div class="contenido">{{ idioma.estudio }} - {{ idioma.nivel }} - {{ idioma.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            <a href="{% url 'editar_estudio_idiomas' idioma.id_idioma %}" class="btn-examinar">
+                                Examinar
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -233,7 +277,7 @@
                     </div>
                 {% endif %}
             </div>
-
+            
                         
             <!-- Publicaciones -->
             <div class="card-item">
@@ -242,7 +286,9 @@
                     {% for publicacion in datos.publicaciones %}
                         <div class="block-item">
                             <div class="contenido">{{ publicacion.nombre }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            <a href="{% url 'editar_publicacion_juridica' publicacion.id_publicacionjuridica %}" class="btn-examinar">
+                                Examinar
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -251,6 +297,7 @@
                     </div>
                 {% endif %}
             </div>
+            
 
             <!-- Distinciones -->
             <div class="card-item">
@@ -259,7 +306,10 @@
                     {% for distincion in datos.distinciones %}
                         <div class="block-item">
                             <div class="contenido">{{ distincion.nombre }} - {{ distincion.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            <a href="{% url 'editar_distincion' distincion.id_distincion %}" class="btn-examinar">
+                                Examinar
+                            </a>
+                            
                         </div>
                     {% endfor %}
                 {% else %}
@@ -268,7 +318,7 @@
                     </div>
                 {% endif %}
             </div>
-
+            
             <div class="card-item">
                 <div class="titulo-section">Experiencia en Docencia:</div>
                 {% if datos.docencias %}

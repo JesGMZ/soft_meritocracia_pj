@@ -1,0 +1,61 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Evento Académico</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}  <!-- Se incluye el navbar -->
+
+    <h2>Editar Evento Académico</h2>
+
+    <div class="container">
+        <form action="{% url 'editar_evento_academico' evento.id_eventoacademico %}" enctype="multipart/form-data" method="POST" class="form">
+
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if juez.id_juez == evento.juez.id_juez %}selected{% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Selección de Estudio de Perfeccionamiento -->
+            <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="{{ evento.id_estudioperfeccionamiento.id_estudioperfeccionamiento }}">
+
+            <!-- Nombre del Evento -->
+            <label for="nombre">Nombre del Evento:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ evento.nombre }}" required class="input">
+
+            <!-- Año del Evento -->
+            <label for="anio">Año del Evento:</label>
+            <input type="number" id="anio" name="anio" value="{{ evento.anio }}" required class="input" min="2019" max="2025">
+
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+
+            {% if evento.documento %}
+                <div>
+                    <strong>Documento actual:</strong> 
+                    <a href="{{ evento.documento }}" target="_blank">Ver PDF</a>
+                </div>
+            {% endif %}
+            
+            <!-- Campo oculto para el Puntaje -->
+            <input type="hidden" id="puntaje" name="puntaje" value="0.25">
+
+            <input type="submit" value="Actualizar Evento Académico" class="login-button">
+        </form>
+    </div>
+
+</body>
+</html>

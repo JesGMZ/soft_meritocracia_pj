@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro de Docencia</title>
-    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
     <h2>Registro de Docencia</h2>
 
     <div class="container">
-        <form action="{% url 'registrar_docencia' %}" method="POST" class="form">
+        <form action="{% url 'registrar_docencia' %}" enctype="multipart/form-data" method="POST" class="form">
             {% csrf_token %}
 
             <!-- Juez -->
@@ -41,6 +41,9 @@
             <label for="horas">Horas dictadas:</label>
             <input type="number" id="horas" name="horas" required class="input" onchange="calcularPuntaje()">
 
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+            
             <!-- Puntaje calculado (solo visual) -->
             <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">0.0</span></p>
 

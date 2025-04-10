@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
     <title>Registro de Estudio de Ofimática</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
     <h2>Registro de Estudio de Ofimática</h2>
 
     <div class="container">
-        <form action="{% url 'registrar_estudio_ofimatica' %}" method="POST" class="form">
+        <form action="{% url 'registrar_estudio_ofimatica' %}" enctype="multipart/form-data" method="POST" class="form">
             {% csrf_token %}
 
             <!-- Selección de Juez -->
@@ -45,6 +45,9 @@
             <label for="anio">Año:</label>
             <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025">
 
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+            
             <!-- Campo oculto para el puntaje -->
             <input type="hidden" id="puntaje" name="puntaje">
 

@@ -1,0 +1,84 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Pasantía</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Editar Pasantía</h2>
+
+    <div class="container">
+        <form action="" method="POST" enctype="multipart/form-data" class="form">
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if juez.id_juez == pasantia.juez.id_juez %}selected{% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Estudio de Perfeccionamiento oculto -->
+            <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="{{ pasantia.id_estudioperfeccionamiento.id_estudioperfeccionamiento }}">
+
+            <!-- Nombre -->
+            <label for="nombre">Nombre de la Pasantía:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ pasantia.nombre }}" required class="input">
+
+            <!-- Tipo -->
+            <label for="tipo">Tipo de Pasantía:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="calcularPuntaje()">
+                <option value="Nacional" {% if pasantia.tipo == "Nacional" %}selected{% endif %}>Nacional</option>
+                <option value="Internacional" {% if pasantia.tipo == "Internacional" %}selected{% endif %}>Internacional</option>
+            </select>
+
+            <!-- Año -->
+            <label for="anio">Año de Obtención:</label>
+            <input type="number" id="anio" name="anio" value="{{ pasantia.anio }}" required class="input" min="2019" max="2025">
+
+            <!-- Nota -->
+            <label for="nota">Nota:</label>
+            <input type="number" id="nota" name="nota" step="0.1" value="{{ pasantia.nota }}" required class="input">
+
+            <!-- Documento -->
+            <label for="documento">Documento (opcional):</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+            {% if pasantia.documento %}
+                <p>Documento actual: <a href="{{ pasantia.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+
+            <!-- Puntaje oculto -->
+            <input type="hidden" id="puntaje" name="puntaje" value="{{ pasantia.puntaje }}">
+
+            <!-- Mostrar puntaje -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">{{ pasantia.puntaje }}</span></p>
+
+            <input type="submit" value="Actualizar Pasantía" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            let tipo = document.getElementById("tipo").value;
+            let puntaje = (tipo === "Internacional") ? 1 : 0.75;
+
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+
+        // Calcular puntaje inicial según el valor seleccionado
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

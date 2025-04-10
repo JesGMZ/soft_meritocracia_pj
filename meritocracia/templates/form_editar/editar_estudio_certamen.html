@@ -1,0 +1,88 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Certamen Académico</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Editar Certamen Académico</h2>
+
+    <div class="container">
+        <form action="{% url 'editar_certamen_academico' certamen.id_certamenacademico %}" method="POST" enctype="multipart/form-data" class="form">
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if juez.id_juez == certamen.juez.id_juez %}selected{% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- ID del estudio de perfeccionamiento (oculto) -->
+            <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="{{ certamen.id_estudioperfeccionamiento.id_estudioperfeccionamiento }}">
+
+            <!-- Tipo de Participación -->
+            <label for="tipo_participacion">Tipo de Participación:</label>
+            <select id="tipo_participacion" name="tipo_participacion" required class="input">
+                <option value="Expositor" {% if certamen.tipo_participacion == "Expositor" %}selected{% endif %}>Expositor</option>
+                <option value="Ponente" {% if certamen.tipo_participacion == "Ponente" %}selected{% endif %}>Ponente</option>
+                <option value="Panelista" {% if certamen.tipo_participacion == "Panelista" %}selected{% endif %}>Panelista</option>
+            </select>
+
+            <!-- Nombre del Certamen -->
+            <label for="nombre">Nombre del Certamen:</label>
+            <input type="text" id="nombre" name="nombre" required class="input" value="{{ certamen.nombre }}">
+
+            <!-- Tipo del Certamen -->
+            <label for="tipo">Tipo de Certamen:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="calcularPuntaje()">
+                <option value="Nacional" {% if certamen.tipo == "Nacional" %}selected{% endif %}>Nacional</option>
+                <option value="Internacional" {% if certamen.tipo == "Internacional" %}selected{% endif %}>Internacional</option>
+            </select>
+
+            <!-- Año -->
+            <label for="anio">Año del Certamen:</label>
+            <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025" value="{{ certamen.anio }}">
+
+            <!-- Documento PDF -->
+            <label for="documento">Documento (opcional):</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+            {% if certamen.documento %}
+                <p>Documento actual: <a href="{{ certamen.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+
+            <!-- Campo oculto para el puntaje -->
+            <input type="hidden" id="puntaje" name="puntaje" value="{{ certamen.puntaje }}">
+
+            <!-- Mostrar puntaje -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">{{ certamen.puntaje }}</span></p>
+
+            <!-- Botón -->
+            <input type="submit" value="Guardar Cambios" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            let tipo = document.getElementById("tipo").value;
+            let puntaje = (tipo === "Internacional") ? 0.5 : 0.25;
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+
+        // Llamar para actualizar si se cambia tipo
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

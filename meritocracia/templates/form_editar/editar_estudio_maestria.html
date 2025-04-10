@@ -1,0 +1,128 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Estudio de Maestría</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %} 
+
+    <h2>Editar Estudio de Maestría</h2>
+
+    <div class="container">
+        <form 
+            action="{% url 'editar_maestria' estudio.id_estudiomaestria %}" 
+            method="POST" 
+            class="form" 
+            enctype="multipart/form-data"
+        >
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if juez.id_juez == estudio.juez.id_juez %}selected{% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- ID Estudio Perfeccionamiento (oculto) -->
+            <input 
+                type="hidden" 
+                id="estudio_perfeccionamiento" 
+                name="estudio_perfeccionamiento" 
+                value="{{ estudio.id_estudioperfeccionamiento.id_estudioperfeccionamiento }}"
+            >
+
+            <!-- Nombre del Estudio -->
+            <label for="nombre">Nombre del Estudio:</label>
+            <input 
+                type="text" 
+                id="nombre" 
+                name="nombre" 
+                required 
+                class="input" 
+                value="{{ estudio.nombre }}"
+            >
+
+            <!-- Año de Obtención -->
+            <label for="anio">Año de Obtención:</label>
+            <input 
+                type="number" 
+                id="anio" 
+                name="anio" 
+                required 
+                class="input" 
+                min="2019" 
+                max="2025" 
+                value="{{ estudio.anio }}"
+            >
+
+            <!-- Nota -->
+            <label for="nota">Nota:</label>
+            <input 
+                type="number" 
+                id="nota" 
+                name="nota" 
+                step="0.1" 
+                required 
+                class="input" 
+                value="{{ estudio.nota }}" 
+                oninput="calcularPuntaje()"
+            >
+
+            <!-- Documento PDF -->
+            <label for="documento">Documento:</label>
+            <input 
+                type="file" 
+                id="documento" 
+                name="documento" 
+                accept="application/pdf" 
+                class="input"
+            >
+            {% if estudio and estudio.documento %}
+                <p>Documento actual: <a href="{{ estudio.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+            
+            <!-- Campo oculto para Puntaje -->
+            <input 
+                type="hidden" 
+                id="puntaje" 
+                name="puntaje" 
+                value="{{ estudio.puntaje }}"
+            >
+
+            <!-- Mostrar puntaje actual -->
+            <p><strong>Puntaje Calculado:</strong> 
+                <span id="puntaje_mostrar">{{ estudio.puntaje }}</span>
+            </p>
+
+            <input type="submit" value="Guardar Cambios" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            let nota = parseFloat(document.getElementById("nota").value);
+            let puntaje = 0.5;
+
+            if (nota >= 15 && nota <= 18) {
+                puntaje = 0.75;
+            } else if (nota > 18) {
+                puntaje = 1;
+            }
+
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+    </script>
+
+</body>
+</html>

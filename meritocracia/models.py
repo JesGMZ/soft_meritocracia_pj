@@ -71,7 +71,7 @@ class EstudioPerfeccionamiento(models.Model):
 class EstudioDoctorado(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
-    id_estudiodoctado = models.AutoField(primary_key=True)
+    id_estudiodoctorado = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
     anio = models.IntegerField()
     nota = models.FloatField()

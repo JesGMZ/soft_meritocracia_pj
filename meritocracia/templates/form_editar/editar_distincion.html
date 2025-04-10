@@ -1,0 +1,55 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Distinción</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Editar Distinción</h2>
+
+    <div class="container">
+        <form action="{% url 'editar_distincion' distincion.id_distincion %}" enctype="multipart/form-data" method="POST" class="form">
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if distincion.juez.id_juez == juez.id_juez %}selected{% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Nombre de la Distinción -->
+            <label for="nombre">Nombre de la Distinción:</label>
+            <input type="text" id="nombre" name="nombre" required class="input" value="{{ distincion.nombre }}">
+
+            <!-- Año -->
+            <label for="anio">Año:</label>
+            <input type="number" id="anio" name="anio" required class="input" value="{{ distincion.anio }}" min="2019" max="2025">
+
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+
+            <!-- Mostrar Documento Actual -->
+            {% if distincion.documento %}
+                <p>Documento Actual: <a href="{{ distincion.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+
+            <!-- Puntaje Fijo -->
+            <p><strong>Puntaje:</strong> 0.5</p>
+
+            <input type="submit" value="Actualizar Distinción" class="login-button">
+        </form>
+    </div>
+
+</body>
+</html>

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'form.css' %}">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
     <title>Registro de Pasantía</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
     <h2>Registro de Pasantía</h2>
 
     <div class="container">
-        <form action="{% url 'registrar_pasantia' %}" method="POST" class="form">
+        <form action="{% url 'registrar_pasantia' %}" method="POST" enctype="multipart/form-data" class="form">
             {% csrf_token %}
 
             <!-- Selección de Juez -->
@@ -48,6 +48,9 @@
             <label for="nota">Nota:</label>
             <input type="number" id="nota" name="nota" step="0.1" required class="input">
 
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+                        
             <!-- Campo oculto para Puntaje (se calculará automáticamente) -->
             <input type="hidden" id="puntaje" name="puntaje">
 

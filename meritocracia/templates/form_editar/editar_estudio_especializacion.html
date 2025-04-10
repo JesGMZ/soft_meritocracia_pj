@@ -1,0 +1,82 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Curso de Especialización</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Editar Curso de Especialización</h2>
+
+    <div class="container">
+        <form action="{% url 'editar_curso_especializacion' curso.id_cursoespecializacion %}" enctype="multipart/form-data" method="POST" class="form">
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if juez.id_juez == curso.juez.id_juez %}selected{% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Estudio de perfeccionamiento (oculto, asumido fijo como '4') -->
+            <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="{{ curso.id_estudioperfeccionamiento.id_estudioperfeccionamiento }}">
+
+            <!-- Nombre del Curso -->
+            <label for="nombre">Nombre del Curso:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ curso.nombre }}" required class="input">
+
+            <!-- Número de horas -->
+            <label for="horas">Horas de Curso:</label>
+            <input type="number" id="horas" name="horas" value="{{ curso.horas }}" required class="input" onchange="calcularPuntaje()">
+
+            <!-- Año del curso -->
+            <label for="anio">Año del Curso:</label>
+            <input type="number" id="anio" name="anio" value="{{ curso.anio }}" required class="input" min="2019" max="2025">
+
+            <!-- Documento PDF -->
+            <label for="documento">Documento (PDF):</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+            {% if curso.documento %}
+                <p>Documento actual: <a href="{{ curso.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+
+            <!-- Puntaje oculto -->
+            <input type="hidden" id="puntaje" name="puntaje" value="{{ curso.puntaje }}">
+
+            <!-- Mostrar el puntaje actual -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">{{ curso.puntaje }}</span></p>
+
+            <input type="submit" value="Actualizar Curso de Especialización" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            let horas = document.getElementById("horas").value;
+            let puntaje = 0;
+
+            if (horas > 200) {
+                puntaje = 1;
+            } else if (horas >= 101 && horas <= 200) {
+                puntaje = 0.75;
+            } else if (horas >= 50 && horas <= 100) {
+                puntaje = 0.5;
+            }
+
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+    </script>
+
+</body>
+</html>

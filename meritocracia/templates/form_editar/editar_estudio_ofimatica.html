@@ -1,0 +1,94 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <title>Editar Estudio de Ofimática</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Editar Estudio de Ofimática</h2>
+
+    <div class="container">
+        <form action="{% url 'editar_estudio_ofimatica' estudio.id_ofimatica %}" enctype="multipart/form-data" method="POST" class="form">
+
+            {% csrf_token %}
+
+            <!-- Selección de Juez -->
+            <label for="juez">Juez:</label>
+            <select id="juez" name="juez" required class="input">
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}" {% if juez.id_juez == estudio.juez.id_juez %} selected {% endif %}>
+                        {{ juez.nombres }} {{ juez.apellidos }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Estudio de perfeccionamiento (valor oculto) -->
+            <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="7">
+
+            <!-- Nivel de Ofimática -->
+            <label for="nivel">Nivel:</label>
+            <select id="nivel" name="nivel" required class="input" onchange="calcularPuntaje()">
+                <option value="Básico" {% if estudio.nivel == "Básico" %} selected {% endif %}>Básico</option>
+                <option value="Intermedio" {% if estudio.nivel == "Intermedio" %} selected {% endif %}>Intermedio</option>
+                <option value="Avanzado" {% if estudio.nivel == "Avanzado" %} selected {% endif %}>Avanzado</option>
+            </select>
+
+            <!-- Nombre del curso de Ofimática -->
+            <label for="estudio">Nombre del Curso:</label>
+            <input type="text" id="estudio" name="estudio" value="{{ estudio.estudio }}" required class="input">
+
+            <!-- Año -->
+            <label for="anio">Año:</label>
+            <input type="number" id="anio" name="anio" value="{{ estudio.anio }}" required class="input" min="2019" max="2025">
+
+            <!-- Documento -->
+            <label for="documento">Documento:</label>
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
+
+            {% if estudio and estudio.documento %}
+            <p>Documento actual: <a href="{{ estudio.documento }}" target="_blank">Ver PDF</a></p>
+            {% endif %}
+            
+            <!-- Campo oculto para el puntaje -->
+            <input type="hidden" id="puntaje" name="puntaje" value="{{ estudio.puntaje }}">
+
+            <!-- Mostrar Puntaje Calculado -->
+            <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">{{ estudio.puntaje }}</span></p>
+
+            <input type="submit" value="Actualizar Estudio de Ofimática" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function calcularPuntaje() {
+            const nivel = document.getElementById("nivel").value;
+            let puntaje = 0;
+
+            switch (nivel) {
+                case "Básico":
+                    puntaje = 0.5;
+                    break;
+                case "Intermedio":
+                    puntaje = 0.75;
+                    break;
+                case "Avanzado":
+                    puntaje = 1.0;
+                    break;
+            }
+
+            document.getElementById("puntaje").value = puntaje;
+            document.getElementById("puntaje_mostrar").innerText = puntaje;
+        }
+
+        window.onload = calcularPuntaje;
+    </script>
+
+</body>
+</html>

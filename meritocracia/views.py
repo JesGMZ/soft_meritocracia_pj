@@ -463,7 +463,7 @@ def registrar_curso_especializacion(request):
     jueces = Juez.objects.all()
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
     
-    return render(request, "form_curso_especializacion.html", {
+    return render(request, "form_especializacion.html", {
         "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
@@ -955,3 +955,667 @@ def admin_view(request):
     jueces_top_5 = obtener_jueces_top_5()
     cantidad_jueces = Juez.objects.count()
     return render(request, 'admin_main.html', {'jueces_top_5': jueces_top_5, 'cantidad_jueces': cantidad_jueces})
+
+
+#AQUI VIENEN TODOS LAS FUNCIONES DE EDICION DE DATOS
+
+def editar_grado_academico(request, id_gradoacademico):
+    grado = get_object_or_404(GradoAcademico, id_gradoacademico=id_gradoacademico)
+    jueces = Juez.objects.all()
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        titulo_gd = request.POST.get("titulo_gd")
+        tipo = request.POST.get("tipo")
+        anio = request.POST.get("anio")
+        documento = request.FILES.get('documento')
+
+        # Obtener nuevo juez
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        # Calcular nuevo puntaje
+        tipos_puntaje = {
+            'DOJ': 9,
+            'DONJ': 6,
+            'MAJ': 4,
+            'MANJ': 3,
+            'TINJ': 2
+        }
+        puntaje = tipos_puntaje.get(tipo, 0)
+
+        # Actualizar los campos
+        grado.juez = juez
+        grado.titulo_gd = titulo_gd
+        grado.tipo = tipo
+        grado.anio = int(anio)
+        grado.puntaje = puntaje
+
+        # Si se subió nuevo documento, reemplazar el anterior
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            grado.documento = fs.url(filename)
+
+        grado.save()
+
+        return redirect("/meritopj/")
+
+    return render(request, "form_editar/form_editar_grado_academico.html", {
+        "grado": grado,
+        "jueces": jueces
+    })
+
+def editar_estudios_magistratura(request, id_estudiomagistratura):
+    estudio = get_object_or_404(EstudiosMagistratura, id_estudiomagistratura=id_estudiomagistratura)
+    jueces = Juez.objects.all()
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        programa = request.POST.get("programa")
+        anio = request.POST.get("anio")
+        nota = request.POST.get("nota")
+        documento = request.FILES.get('documento')
+
+        # Validar juez
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        # Validar nota
+        try:
+            nota = float(nota)
+        except ValueError:
+            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
+
+        # Calcular puntaje según nota
+        if 19 <= nota <= 20:
+            puntaje = 8
+        elif 17 <= nota <= 18:
+            puntaje = 6
+        elif 15 <= nota <= 16:
+            puntaje = 4
+        elif 13 <= nota <= 14:
+            puntaje = 2
+        else:
+            puntaje = 0
+
+        # Actualizar campos
+        estudio.juez = juez
+        estudio.programa = programa
+        estudio.anio = int(anio)
+        estudio.nota = nota
+        estudio.puntaje = puntaje
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            estudio.documento = fs.url(filename)
+
+        estudio.save()
+        return redirect("/meritopj/")
+
+    return render(request, "form_editar/editar_estudios_magistratura.html", {
+        "estudio": estudio,
+        "jueces": jueces
+    })
+
+def editar_doctorado(request, id_estudiodoctorado):
+    doctorado = get_object_or_404(EstudioDoctorado, id_estudiodoctorado=id_estudiodoctorado)
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        nombre = request.POST.get("nombre")
+        anio = request.POST.get("anio")
+        nota = request.POST.get("nota")
+        documento = request.FILES.get("documento")
+
+        try:
+            nota = float(nota)
+        except ValueError:
+            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
+
+        # Asignar puntaje
+        if nota < 15:
+            puntaje = 0.5
+        elif 15 <= nota <= 18:
+            puntaje = 0.75
+        else:
+            puntaje = 1.0
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        try:
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except EstudioPerfeccionamiento.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+
+        doctorado.juez = juez
+        doctorado.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        doctorado.nombre = nombre
+        doctorado.anio = int(anio)
+        doctorado.nota = nota
+        doctorado.puntaje = puntaje
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            doctorado.documento = fs.url(filename)
+
+        doctorado.save()
+        return redirect("/meritopj/")
+
+    return render(request, "form_editar/editar_estudio_doctorado.html", {
+        'doctorado': doctorado,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+
+def editar_maestria(request, id_estudiomaestria):
+    estudio = get_object_or_404(EstudioMaestria, id_estudiomaestria=id_estudiomaestria)
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        nombre = request.POST.get("nombre")
+        anio = request.POST.get("anio")
+        nota = request.POST.get("nota")
+        documento = request.FILES.get("documento")
+
+        try:
+            nota = float(nota)
+        except ValueError:
+            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
+
+        # Asignar puntaje
+        if nota < 15:
+            puntaje = 0.5
+        elif 15 <= nota <= 18:
+            puntaje = 0.75
+        else:
+            puntaje = 1.0
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        try:
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except EstudioPerfeccionamiento.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+
+        estudio.juez = juez
+        estudio.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        estudio.nombre = nombre
+        estudio.anio = int(anio)
+        estudio.nota = nota
+        estudio.puntaje = puntaje
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            estudio.documento = fs.url(filename)
+
+        estudio.save()
+        return redirect("/meritopj/")
+
+    return render(request, "form_editar/editar_estudio_maestria.html", {
+        "estudio": estudio,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+def editar_pasantia(request, id_pasantia):
+    pasantia = get_object_or_404(Pasantia, id_pasantia=id_pasantia)
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        nombre = request.POST.get("nombre")
+        tipo = request.POST.get("tipo")
+        anio = request.POST.get("anio")
+        nota = request.POST.get("nota")
+        documento = request.FILES.get('documento')
+
+        try:
+            nota = float(nota)
+        except ValueError:
+            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
+
+        puntaje = 0
+        if tipo == 'Nacional':
+            puntaje = 0.75
+        elif tipo == 'Internacional':
+            puntaje = 1
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        try:
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except EstudioPerfeccionamiento.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            pasantia.documento = fs.url(filename)
+
+        # Actualizar campos
+        pasantia.juez = juez
+        pasantia.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        pasantia.nombre = nombre
+        pasantia.tipo = tipo
+        pasantia.anio = int(anio)
+        pasantia.nota = float(nota)
+        pasantia.puntaje = puntaje
+        pasantia.save()
+
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
+
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    return render(request, "form_editar/editar_estudio_pasantia.html", {
+        "pasantia": pasantia,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+def editar_curso_especializacion(request, id_curso):
+    curso = get_object_or_404(CursoEspecializacion, id_cursoespecializacion=id_curso)
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        nombre = request.POST.get("nombre")
+        horas = request.POST.get("horas")
+        anio = request.POST.get("anio")
+        documento = request.FILES.get('documento')
+
+        try:
+            horas = int(horas)
+        except ValueError:
+            return render(request, "error.html", {"mensaje": "Las horas ingresadas no son válidas"})
+
+        if horas > 200:
+            puntaje = 1
+        elif 101 <= horas <= 200:
+            puntaje = 0.75
+        elif 50 <= horas <= 100:
+            puntaje = 0.5
+        else:
+            puntaje = 0
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        try:
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except EstudioPerfeccionamiento.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            curso.documento = fs.url(filename)
+
+        # Actualizar campos
+        curso.juez = juez
+        curso.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        curso.nombre = nombre
+        curso.horas = horas
+        curso.anio = int(anio)
+        curso.puntaje = puntaje
+        curso.save()
+
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
+
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    return render(request, "form_editar/editar_estudio_especializacion.html", {
+        "curso": curso,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+def editar_certamen_academico(request, id):
+    certamen = get_object_or_404(CertamenAcademico, id_certamenacademico=id)
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        tipo_participacion = request.POST.get("tipo_participacion")
+        nombre = request.POST.get("nombre")
+        tipo = request.POST.get("tipo")
+        anio = request.POST.get("anio")
+        documento = request.FILES.get('documento')
+
+        # Calcular puntaje
+        if tipo == 'Nacional':
+            puntaje = 0.25
+        elif tipo == 'Internacional':
+            puntaje = 0.5
+        else:
+            puntaje = 0
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except (Juez.DoesNotExist, EstudioPerfeccionamiento.DoesNotExist):
+            return render(request, "error.html", {"mensaje": "El juez o estudio de perfeccionamiento no existe"})
+
+        certamen.juez = juez
+        certamen.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        certamen.tipo_participacion = tipo_participacion
+        certamen.nombre = nombre
+        certamen.tipo = tipo
+        certamen.anio = int(anio)
+        certamen.puntaje = puntaje
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            certamen.documento = fs.url(filename)
+
+        certamen.save()
+
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
+
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    return render(request, "form_editar/editar_estudio_certamen.html", {
+        "certamen": certamen,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+def editar_evento_academico(request, id):
+    evento = get_object_or_404(EventoAcademico, id_eventoacademico=id)
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        nombre = request.POST.get("nombre")
+        anio = request.POST.get("anio")
+        documento = request.FILES.get('documento')
+
+        puntaje = 0.25  # Puntaje fijo
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except (Juez.DoesNotExist, EstudioPerfeccionamiento.DoesNotExist):
+            return render(request, "error.html", {"mensaje": "El juez o estudio de perfeccionamiento no existe"})
+
+        evento.juez = juez
+        evento.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        evento.nombre = nombre
+        evento.anio = int(anio)
+        evento.puntaje = puntaje
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            evento.documento = fs.url(filename)
+
+        evento.save()
+
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
+
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    return render(request, "form_editar/editar_estudio_evento.html", {
+        "evento": evento,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+def editar_estudio_ofimatica(request, id_ofimatica):
+    estudio = get_object_or_404(EstudioOfimatica, id_ofimatica=id_ofimatica)
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        nivel = request.POST.get("nivel")
+        nombre_estudio = request.POST.get("estudio")
+        anio = request.POST.get("anio")
+        documento = request.FILES.get('documento')
+
+        puntaje_dict = {
+            "Básico": 0.5,
+            "Intermedio": 0.75,
+            "Avanzado": 1.0
+        }
+        puntaje = puntaje_dict.get(nivel, 0)
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except (Juez.DoesNotExist, EstudioPerfeccionamiento.DoesNotExist):
+            return render(request, "error.html", {"mensaje": "Datos no válidos"})
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            estudio.documento = fs.url(filename)
+
+        estudio.juez = juez
+        estudio.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        estudio.nivel = nivel
+        estudio.estudio = nombre_estudio
+        estudio.anio = int(anio)
+        estudio.puntaje = puntaje
+        estudio.save()
+
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
+
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    return render(request, "form_editar/editar_estudio_ofimatica.html", {
+        "estudio": estudio,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+def editar_estudio_idiomas(request, id_idioma):
+    estudio = get_object_or_404(EstudioIdioma, id_idioma=id_idioma)
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
+        nivel = request.POST.get("nivel")
+        nombre_estudio = request.POST.get("estudio")
+        anio = request.POST.get("anio")
+        documento = request.FILES.get('documento')
+
+        puntaje_dict = {
+            "Básico": 0.5,
+            "Intermedio": 0.75,
+            "Avanzado": 1.0
+        }
+        puntaje = puntaje_dict.get(nivel, 0)
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+            estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
+        except (Juez.DoesNotExist, EstudioPerfeccionamiento.DoesNotExist):
+            return render(request, "error.html", {"mensaje": "Datos no válidos"})
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            estudio.documento = fs.url(filename)
+
+        estudio.juez = juez
+        estudio.id_estudioperfeccionamiento = estudio_perfeccionamiento
+        estudio.nivel = nivel
+        estudio.estudio = nombre_estudio
+        estudio.anio = int(anio)
+        estudio.puntaje = puntaje
+        estudio.save()
+
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
+
+    jueces = Juez.objects.all()
+    estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
+
+    return render(request, "form_editar/editar_estudio_idiomas.html", {
+        "estudio": estudio,
+        "jueces": jueces,
+        "estudios_perfeccionamiento": estudios_perfeccionamiento
+    })
+
+def editar_publicacion_juridica(request, id_publicacionjuridica):
+    publicacion = get_object_or_404(PublicacionJuridica, id_publicacionjuridica=id_publicacionjuridica)
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        tipo = request.POST.get("tipo")
+        nombre = request.POST.get("nombre")
+        documento = request.FILES.get('documento')
+
+        puntajes = {
+            "LIBRO": 1.5,
+            "REVISTA": 0.5,
+            "MERITO": 1
+        }
+        puntaje = puntajes.get(tipo, 0)
+
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            publicacion.documento = fs.url(filename)
+
+        publicacion.juez = juez
+        publicacion.tipo = tipo
+        publicacion.nombre = nombre
+        publicacion.puntaje = puntaje
+        publicacion.save()
+
+        return redirect("/meritopj/registrar_publicacion_juridica")
+
+    jueces = Juez.objects.all()
+
+    return render(request, "form_editar/editar_publicacion.html", {
+        "publicacion": publicacion,
+        "jueces": jueces
+    })
+
+def editar_distincion(request, id_distincion):
+    try:
+        distincion = Distincion.objects.get(id_distincion=id_distincion)
+    except Distincion.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "La distinción no existe"})
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        nombre = request.POST.get("nombre")
+        anio = request.POST.get("anio")
+        documento = request.FILES.get('documento')  # Nuevo archivo (si se sube)
+
+        # Validar juez
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        # Guardar el nuevo documento si se sube
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            documento_url = fs.url(filename)
+            distincion.documento = documento_url
+
+        # Actualizar campos
+        distincion.juez = juez
+        distincion.nombre = nombre
+        distincion.anio = anio
+        distincion.puntaje = 0.5  # Fijo
+        distincion.save()
+
+        return redirect("/meritopj/registrar_distincion")
+
+    jueces = Juez.objects.all()
+    return render(request, "form_editar/editar_distincion.html", {
+        "jueces": jueces,
+        "distincion": distincion
+    })
+
+
+def editar_docencia(request, id_docencia):
+    try:
+        docencia = Docencia.objects.get(id=id_docencia)
+    except Docencia.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "La docencia no existe"})
+
+    if request.method == "POST":
+        juez_id = request.POST.get("juez")
+        curso = request.POST.get("curso")
+        universidad = request.POST.get("universidad")
+        anio = request.POST.get("anio")
+        horas = request.POST.get("horas")
+        documento = request.FILES.get('documento')  # Nuevo documento si se sube
+
+        # Validar horas
+        try:
+            horas = int(horas)
+            puntaje = horas * 0.375
+        except ValueError:
+            return render(request, "error.html", {"mensaje": "Las horas deben ser un número entero"})
+
+        # Validar juez
+        try:
+            juez = Juez.objects.get(id_juez=juez_id)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe"})
+
+        # Guardar nuevo archivo si se sube
+        if documento:
+            fs = FileSystemStorage()
+            filename = fs.save(documento.name, documento)
+            documento_url = fs.url(filename)
+            docencia.documento = documento_url
+
+        # Actualizar campos
+        docencia.juez = juez
+        docencia.curso = curso
+        docencia.universidad = universidad
+        docencia.anio = anio
+        docencia.horas = horas
+        docencia.puntaje = puntaje
+        docencia.save()
+
+        return redirect("/meritopj/registrar_docencia")
+
+    jueces = Juez.objects.all()
+    return render(request, "form_docencia.html", {
+        "jueces": jueces,
+        "docencia": docencia
+    })

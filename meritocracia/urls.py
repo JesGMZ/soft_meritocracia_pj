@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import admin_dashboard, admin_view, buscar_juez, juez_dashboard, login_view, registrar_certamen_academico, registrar_curso_especializacion, registrar_distincion, registrar_docencia, registrar_doctorado, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_pasantia, registrar_publicacion_juridica
+from .views import admin_dashboard, admin_view, buscar_juez, editar_certamen_academico, editar_curso_especializacion, editar_distincion, editar_doctorado, editar_estudio_idiomas, editar_estudio_ofimatica, editar_estudios_magistratura, editar_evento_academico, editar_grado_academico, editar_maestria, editar_pasantia, editar_publicacion_juridica, juez_dashboard, login_view, registrar_certamen_academico, registrar_curso_especializacion, registrar_distincion, registrar_docencia, registrar_doctorado, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_pasantia, registrar_publicacion_juridica
 
 urlpatterns = [
     path('', meritopj),
@@ -23,5 +23,17 @@ urlpatterns = [
     path("registrar_publicacion_juridica/", registrar_publicacion_juridica, name="registrar_publicacion_juridica"),
     path("registrar_distincion/", registrar_distincion, name="registrar_distincion"),
     path("registrar_docencia/", registrar_docencia, name="registrar_docencia"),
-    path('buscar_juez/', buscar_juez, name='buscar_juez')
+    path('buscar_juez/', buscar_juez, name='buscar_juez'),
+    path('editar_grado_academico/<int:id_gradoacademico>/', editar_grado_academico, name='editar_grado_academico'),
+    path('editar_estudios_magistratura/<int:id_estudiomagistratura>/', editar_estudios_magistratura, name='editar_estudios_magistratura'),
+    path('editar_doctorado/<int:id_estudiodoctorado>/', editar_doctorado, name='editar_doctorado'),
+    path('editar_maestria/<int:id_estudiomaestria>/', editar_maestria, name='editar_maestria'),
+    path('editar_pasantia/<int:id_pasantia>/', editar_pasantia, name='editar_pasantia'),
+    path('editar_curso_especializacion/<int:id_curso>/', editar_curso_especializacion, name='editar_curso_especializacion'),
+    path('editar_certamen_academico/<int:id>/', editar_certamen_academico, name='editar_certamen_academico'),
+    path('editar_evento_academico/<int:id>/', editar_evento_academico, name='editar_evento_academico'),
+    path('editar_estudio_ofimatica/<int:id_ofimatica>/', editar_estudio_ofimatica, name='editar_estudio_ofimatica'),
+    path('editar_estudio_idiomas/<int:id_idioma>/', editar_estudio_idiomas, name='editar_estudio_idiomas'),
+    path('editar_publicacion_juridica/<int:id_publicacionjuridica>/', editar_publicacion_juridica, name='editar_publicacion_juridica'),
+    path('editar_distincion/<int:id_distincion>/', editar_distincion, name='editar_distincion')
 ]
