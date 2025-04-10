@@ -44,7 +44,6 @@
             </div>
         </div>
 
-        <!-- Card para la cantidad de registros de jueces (disposición horizontal) -->
         <div class="card horizontal-card">
             <div class="card-header">
                 <h3>Cantidad de Registros de Jueces</h3>
@@ -54,7 +53,11 @@
             </div>
         </div>
 
-        <!-- Card para la consulta de registros -->
+        <a href="{% url 'registrar_juez' %}" class="card mt-3">
+            <img src="{% static 'icons/icon_juez.png' %}" alt="Juez">
+            <span>Registro de Jueces</span>
+        </a>
+        
         <a href="{% url 'buscar_juez' %}" class="card mt-3">
             <img src="{% static 'icons/icon_consulta.png' %}" alt="Consulta de Registros">
             <span>Consulta de Registros</span>

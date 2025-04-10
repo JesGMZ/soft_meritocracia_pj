@@ -1,12 +1,11 @@
 from django.urls import path
-from .views import admin_dashboard, admin_view, buscar_juez, editar_certamen_academico, editar_curso_especializacion, editar_distincion, editar_docencia, editar_doctorado, editar_estudio_idiomas, editar_estudio_ofimatica, editar_estudios_magistratura, editar_evento_academico, editar_grado_academico, editar_maestria, editar_pasantia, editar_publicacion_juridica, juez_dashboard, login_view, logout_view, registrar_certamen_academico, registrar_curso_especializacion, registrar_distincion, registrar_docencia, registrar_doctorado, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_pasantia, registrar_publicacion_juridica
+from .views import admin_view, buscar_juez, editar_certamen_academico, editar_curso_especializacion, editar_distincion, editar_docencia, editar_doctorado, editar_estudio_idiomas, editar_estudio_ofimatica, editar_estudios_magistratura, editar_evento_academico, editar_grado_academico, editar_maestria, editar_pasantia, editar_publicacion_juridica, juez_dashboard, login_view, logout_view, registrar_certamen_academico, registrar_curso_especializacion, registrar_distincion, registrar_docencia, registrar_doctorado, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_pasantia, registrar_publicacion_juridica
 
 urlpatterns = [
     path('', meritopj),
     path('login/', login_view, name='login_view'),
     path('logout_pj/', logout_view, name='logout_view'),
     path('admin-view/', admin_view, name='admin_view'),
-    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path('juez-dashboard/', juez_dashboard, name='juez_dashboard'),
     path("registrar_juez/", registrar_juez, name="registrar_juez"),
     path("registrar_antiguedad/", registrar_antiguedad, name="registrar_antiguedad"),

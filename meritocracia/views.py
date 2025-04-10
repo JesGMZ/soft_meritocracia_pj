@@ -19,7 +19,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             if user.is_superuser:
-                return redirect('admin_dashboard')
+                return redirect('admin_view')
             elif hasattr(user, 'juez'):
                 return redirect('juez_dashboard')
             else:
@@ -32,12 +32,6 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login_view')
-
-@login_required
-def admin_dashboard(request):
-    if not request.user.is_superuser:
-        return redirect('login')
-    return render(request, 'admin_main.html')
 
 @login_required
 def juez_dashboard(request):
@@ -966,10 +960,18 @@ def top_jueces(request):
     jueces = obtener_jueces_top_5() 
     return render(request, 'admin_main.html', {'jueces_top_5': jueces})
 
+@login_required
 def admin_view(request):
+    if not request.user.is_superuser:
+        return redirect('login')
+    
     jueces_top_5 = obtener_jueces_top_5()
     cantidad_jueces = Juez.objects.count()
-    return render(request, 'admin_main.html', {'jueces_top_5': jueces_top_5, 'cantidad_jueces': cantidad_jueces})
+    
+    return render(request, 'admin_main.html', {
+        'jueces_top_5': jueces_top_5,
+        'cantidad_jueces': cantidad_jueces
+    })
 
 
 #AQUI VIENEN TODOS LAS FUNCIONES DE EDICION DE DATOS

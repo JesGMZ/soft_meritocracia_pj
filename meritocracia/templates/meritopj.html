@@ -12,17 +12,9 @@
 
     {% include 'navbar.html' %} 
     
-    <a href="{% url 'admin_view' %}" class="card">
-        <span>Vista Administrador</span>
-    </a>
 
     <!-- Contenido principal -->
     <div class="container">
-        <a href="{% url 'registrar_juez' %}" class="card">
-            <img src="{% static 'icons/icon_juez.png' %}" alt="Juez">
-            <span>Registro de Jueces</span>
-        </a>
-
         <a href="{% url 'registrar_estudios_magistratura' %}" class="card">
             <img src="{% static 'icons/icon_magistratura.png' %}" alt="Estudios">
             <span>Registro de Estudios de Magistratura</span>
