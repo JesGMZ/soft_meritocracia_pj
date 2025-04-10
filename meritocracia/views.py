@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -12,23 +12,26 @@ from meritocracia import models
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST.get("password", "")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
-            # Redirige según el tipo de usuario
             if user.is_superuser:
                 return redirect('admin_dashboard')
-            elif hasattr(user):
-                return render(request, "meritopj.html")
+            elif hasattr(user, 'juez'):
+                return redirect('juez_dashboard')
             else:
                 return redirect('home')
         else:
-            return render(request, "meritopj.html", {"error": "Credenciales incorrectas"})
+            return render(request, "error.html")
 
     return render(request, "registration/login.html")
+
+def logout_view(request):
+    logout(request)
+    return redirect('login_view')
 
 @login_required
 def admin_dashboard(request):
@@ -210,7 +213,8 @@ def registrar_estudios_magistratura(request):
             anio=int(anio),
             nota=nota,
             puntaje=puntaje,
-            documento=documento_url if documento else None  # Guardar la URL del documento
+            documento=documento_url if documento else None,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/")
@@ -228,7 +232,7 @@ def registrar_doctorado(request):
         nombre = request.POST.get("nombre")
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
-        documento = request.FILES.get('documento')  # Obtener el archivo PDF
+        documento = request.FILES.get('documento')  
 
         try:
             nota = float(nota)
@@ -265,7 +269,8 @@ def registrar_doctorado(request):
             anio=int(anio),
             nota=float(nota),
             puntaje=float(puntaje),
-            documento=documento_url if documento else None  # Guardar la URL del documento
+            documento=documento_url if documento else None,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -323,7 +328,8 @@ def registrar_maestria(request):
             anio=int(anio),
             nota=float(nota),
             puntaje=float(puntaje),
-            documento=documento_url if documento else None  # Guardar la URL del documento
+            documento=documento_url if documento else None,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -344,7 +350,7 @@ def registrar_pasantia(request):
         tipo = request.POST.get("tipo")
         anio = request.POST.get("anio")  
         nota = request.POST.get("nota")  
-        documento = request.FILES.get('documento')  # Obtener el archivo PDF
+        documento = request.FILES.get('documento') 
 
         try:
             nota = float(nota)  # Intentar convertir la nota a un número flotante
@@ -388,7 +394,8 @@ def registrar_pasantia(request):
             anio=int(anio),
             nota=float(nota),
             puntaje=float(puntaje),
-            documento=documento_url  # Guardar la URL del archivo si se sube
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")  
@@ -455,7 +462,8 @@ def registrar_curso_especializacion(request):
             horas=horas,
             anio=int(anio),
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo si se sube
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -515,7 +523,8 @@ def registrar_certamen_academico(request):
             tipo=tipo,
             anio=int(anio),
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo si se sube
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")  # Redirige al formulario de estudio de perfeccionamiento
@@ -567,7 +576,8 @@ def registrar_evento_academico(request):
             nombre=nombre,
             anio=int(anio),
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo si se sube
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")  # Redirigir a otra página después del registro
@@ -626,7 +636,8 @@ def registrar_estudio_ofimatica(request):
             estudio=nombre_estudio,
             anio=int(anio),
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo si se sube
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -685,7 +696,8 @@ def registrar_estudio_idiomas(request):
             estudio=nombre_estudio,
             anio=int(anio),
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo si se sube
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -735,7 +747,8 @@ def registrar_publicacion_juridica(request):
             tipo=tipo,
             nombre=nombre,
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_publicacion_juridica")  # Redirige tras registrar
@@ -773,7 +786,8 @@ def registrar_distincion(request):
             nombre=nombre,
             anio=anio,
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_distincion")  # Redirige al mismo formulario tras registrar
@@ -820,7 +834,8 @@ def registrar_docencia(request):
             anio=anio,
             horas=horas,
             puntaje=puntaje,
-            documento=documento_url  # Guardar la URL del archivo
+            documento=documento_url,
+            estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_docencia")  # Redirigir tras registrar
@@ -969,6 +984,7 @@ def editar_grado_academico(request, id_gradoacademico):
         tipo = request.POST.get("tipo")
         anio = request.POST.get("anio")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         # Obtener nuevo juez
         try:
@@ -992,6 +1008,7 @@ def editar_grado_academico(request, id_gradoacademico):
         grado.tipo = tipo
         grado.anio = int(anio)
         grado.puntaje = puntaje
+        grado.estado = estado
 
         # Si se subió nuevo documento, reemplazar el anterior
         if documento:
@@ -1018,6 +1035,7 @@ def editar_estudios_magistratura(request, id_estudiomagistratura):
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         # Validar juez
         try:
@@ -1049,6 +1067,7 @@ def editar_estudios_magistratura(request, id_estudiomagistratura):
         estudio.anio = int(anio)
         estudio.nota = nota
         estudio.puntaje = puntaje
+        estudio.estado = estado
 
         if documento:
             fs = FileSystemStorage()
@@ -1075,6 +1094,7 @@ def editar_doctorado(request, id_estudiodoctorado):
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
         documento = request.FILES.get("documento")
+        estado = request.POST.get("estado")
 
         try:
             nota = float(nota)
@@ -1105,6 +1125,7 @@ def editar_doctorado(request, id_estudiodoctorado):
         doctorado.anio = int(anio)
         doctorado.nota = nota
         doctorado.puntaje = puntaje
+        doctorado.estado = estado
 
         if documento:
             fs = FileSystemStorage()
@@ -1133,6 +1154,7 @@ def editar_maestria(request, id_estudiomaestria):
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
         documento = request.FILES.get("documento")
+        estado = request.POST.get("estado")
 
         try:
             nota = float(nota)
@@ -1163,6 +1185,7 @@ def editar_maestria(request, id_estudiomaestria):
         estudio.anio = int(anio)
         estudio.nota = nota
         estudio.puntaje = puntaje
+        estudio.estado = estado
 
         if documento:
             fs = FileSystemStorage()
@@ -1189,6 +1212,7 @@ def editar_pasantia(request, id_pasantia):
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         try:
             nota = float(nota)
@@ -1224,6 +1248,7 @@ def editar_pasantia(request, id_pasantia):
         pasantia.anio = int(anio)
         pasantia.nota = float(nota)
         pasantia.puntaje = puntaje
+        pasantia.estado = estado
         pasantia.save()
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -1247,6 +1272,7 @@ def editar_curso_especializacion(request, id_curso):
         horas = request.POST.get("horas")
         anio = request.POST.get("anio")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         try:
             horas = int(horas)
@@ -1284,6 +1310,7 @@ def editar_curso_especializacion(request, id_curso):
         curso.horas = horas
         curso.anio = int(anio)
         curso.puntaje = puntaje
+        curso.estado = estado
         curso.save()
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -1308,6 +1335,7 @@ def editar_certamen_academico(request, id):
         tipo = request.POST.get("tipo")
         anio = request.POST.get("anio")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         # Calcular puntaje
         if tipo == 'Nacional':
@@ -1330,6 +1358,7 @@ def editar_certamen_academico(request, id):
         certamen.tipo = tipo
         certamen.anio = int(anio)
         certamen.puntaje = puntaje
+        certamen.estado = estado
 
         if documento:
             fs = FileSystemStorage()
@@ -1358,6 +1387,7 @@ def editar_evento_academico(request, id):
         nombre = request.POST.get("nombre")
         anio = request.POST.get("anio")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         puntaje = 0.25  # Puntaje fijo
 
@@ -1372,6 +1402,7 @@ def editar_evento_academico(request, id):
         evento.nombre = nombre
         evento.anio = int(anio)
         evento.puntaje = puntaje
+        evento.estado = estado
 
         if documento:
             fs = FileSystemStorage()
@@ -1401,6 +1432,7 @@ def editar_estudio_ofimatica(request, id_ofimatica):
         nombre_estudio = request.POST.get("estudio")
         anio = request.POST.get("anio")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         puntaje_dict = {
             "Básico": 0.5,
@@ -1426,6 +1458,7 @@ def editar_estudio_ofimatica(request, id_ofimatica):
         estudio.estudio = nombre_estudio
         estudio.anio = int(anio)
         estudio.puntaje = puntaje
+        estudio.estado = estado
         estudio.save()
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -1449,6 +1482,7 @@ def editar_estudio_idiomas(request, id_idioma):
         nombre_estudio = request.POST.get("estudio")
         anio = request.POST.get("anio")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         puntaje_dict = {
             "Básico": 0.5,
@@ -1474,6 +1508,7 @@ def editar_estudio_idiomas(request, id_idioma):
         estudio.estudio = nombre_estudio
         estudio.anio = int(anio)
         estudio.puntaje = puntaje
+        estudio.estado = estado
         estudio.save()
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
@@ -1495,6 +1530,7 @@ def editar_publicacion_juridica(request, id_publicacionjuridica):
         tipo = request.POST.get("tipo")
         nombre = request.POST.get("nombre")
         documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         puntajes = {
             "LIBRO": 1.5,
@@ -1517,6 +1553,7 @@ def editar_publicacion_juridica(request, id_publicacionjuridica):
         publicacion.tipo = tipo
         publicacion.nombre = nombre
         publicacion.puntaje = puntaje
+        publicacion.estado = estado
         publicacion.save()
 
         return redirect("/meritopj/registrar_publicacion_juridica")
@@ -1538,7 +1575,8 @@ def editar_distincion(request, id_distincion):
         juez_id = request.POST.get("juez")
         nombre = request.POST.get("nombre")
         anio = request.POST.get("anio")
-        documento = request.FILES.get('documento')  # Nuevo archivo (si se sube)
+        documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         # Validar juez
         try:
@@ -1557,7 +1595,8 @@ def editar_distincion(request, id_distincion):
         distincion.juez = juez
         distincion.nombre = nombre
         distincion.anio = anio
-        distincion.puntaje = 0.5  # Fijo
+        distincion.puntaje = 0.5
+        distincion.estado = estado
         distincion.save()
 
         return redirect("/meritopj/registrar_distincion")
@@ -1571,7 +1610,7 @@ def editar_distincion(request, id_distincion):
 
 def editar_docencia(request, id_docencia):
     try:
-        docencia = Docencia.objects.get(id=id_docencia)
+        docencia = Docencia.objects.get(id_docencia=id_docencia)
     except Docencia.DoesNotExist:
         return render(request, "error.html", {"mensaje": "La docencia no existe"})
 
@@ -1581,7 +1620,8 @@ def editar_docencia(request, id_docencia):
         universidad = request.POST.get("universidad")
         anio = request.POST.get("anio")
         horas = request.POST.get("horas")
-        documento = request.FILES.get('documento')  # Nuevo documento si se sube
+        documento = request.FILES.get('documento')
+        estado = request.POST.get("estado")
 
         # Validar horas
         try:
@@ -1615,7 +1655,7 @@ def editar_docencia(request, id_docencia):
         return redirect("/meritopj/registrar_docencia")
 
     jueces = Juez.objects.all()
-    return render(request, "form_docencia.html", {
+    return render(request, "form_editar/editar_docencia.html", {
         "jueces": jueces,
         "docencia": docencia
     })

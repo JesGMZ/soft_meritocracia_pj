@@ -6,10 +6,15 @@
     <h1>Sistema de Análisis de Meritocracia</h1>
     <div class="nav-buttons">
         <button class="nav-btn">
+            <span class="username-text">{{ user.username }}</span>
             <img src="{% static 'icons/icon_user.png' %}" alt="Usuario">
         </button>
-        <button class="nav-btn">
-            <img src="{% static 'icons/icon_logout.png' %}" alt="Salir">
-        </button>
+        <form method="post" action="{% url 'logout_view' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="nav-btn"> 
+                <img src="{% static 'icons/icon_logout.png' %}" alt="Salir">
+            </button>
+        </form>
+        
     </div>
 </nav>

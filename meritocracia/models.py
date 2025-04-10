@@ -29,12 +29,18 @@ class Antiguedad(models.Model):
 
 class GradoAcademico(models.Model):
     id_gradoacademico = models.AutoField(primary_key=True)
+    
     TIPOS = [
         ('DOJ', 'Doctorado en especialidad jurídica'),
         ('DONJ', 'Doctorado en especialidad no jurídica'),
         ('MAJ', 'Maestría en especialidad jurídica'),
         ('MANJ', 'Maestría en especialidad no jurídica'),
         ('TINJ', 'Título en especialidad no jurídica'),
+    ]
+
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
     ]
     
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
@@ -43,6 +49,7 @@ class GradoAcademico(models.Model):
     anio = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/gradoacademico/', null=True, blank=True)
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class EstudiosMagistratura(models.Model):
     id_estudiomagistratura = models.AutoField(primary_key=True)
@@ -52,6 +59,11 @@ class EstudiosMagistratura(models.Model):
     nota = models.FloatField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/estudiosmagistratura/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class EstudioPerfeccionamiento(models.Model):
     id_estudioperfeccionamiento = models.AutoField(primary_key=True)
@@ -68,6 +80,7 @@ class EstudioPerfeccionamiento(models.Model):
     tipo = models.CharField(max_length=100, choices=TIPOS)
     documento = models.FileField(upload_to='certificados/estudioperfeccionamiento/', null=True, blank=True)
 
+
 class EstudioDoctorado(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
@@ -77,6 +90,11 @@ class EstudioDoctorado(models.Model):
     nota = models.FloatField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/estudiodoctado/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class EstudioMaestria(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
@@ -87,6 +105,11 @@ class EstudioMaestria(models.Model):
     nota = models.FloatField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/estudiomaestria/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class Pasantia(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
@@ -98,6 +121,11 @@ class Pasantia(models.Model):
     nota = models.FloatField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/pasantia/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class CursoEspecializacion(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
@@ -108,6 +136,11 @@ class CursoEspecializacion(models.Model):
     anio = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/cursoespecializacion/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class CertamenAcademico(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
@@ -119,6 +152,11 @@ class CertamenAcademico(models.Model):
     anio = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/certamenacademico/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class EventoAcademico(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
@@ -128,6 +166,11 @@ class EventoAcademico(models.Model):
     anio = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/eventoacademico/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class EstudioOfimatica(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
@@ -138,6 +181,11 @@ class EstudioOfimatica(models.Model):
     anio = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/ofimatica/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class EstudioIdioma(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
@@ -148,6 +196,11 @@ class EstudioIdioma(models.Model):
     anio = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/idioma/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class PublicacionJuridica(models.Model):
     id_publicacionjuridica = models.AutoField(primary_key=True)
@@ -161,6 +214,11 @@ class PublicacionJuridica(models.Model):
     nombre = models.CharField(max_length=255)
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/publicacionjuridica/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class Distincion(models.Model):
     id_distincion = models.AutoField(primary_key=True)
@@ -169,6 +227,11 @@ class Distincion(models.Model):
     anio = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/distincion/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 class Docencia(models.Model):
     id_docencia = models.AutoField(primary_key=True)
@@ -179,6 +242,11 @@ class Docencia(models.Model):
     horas = models.IntegerField()
     puntaje = models.FloatField()
     documento = models.FileField(upload_to='certificados/docencia/', null=True, blank=True)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
 
 class Demeritos(models.Model):

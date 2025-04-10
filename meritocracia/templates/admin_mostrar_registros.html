@@ -321,11 +321,15 @@
             
             <div class="card-item">
                 <div class="titulo-section">Experiencia en Docencia:</div>
-                {% if datos.docencias %}
-                    {% for docencia in datos.docencias %}
+                {% if datos.docencia %}
+                    {% for docencia in datos.docencia %}
                         <div class="block-item">
-                            <div class="contenido">{{ docencia.curso }} - {{ docencia.universidad }} - {{ docencia.horas }} horas - {{ docencia.anio }}</div>
-                            <button class="btn-examinar">Examinar</button>
+                            <div class="contenido">
+                                {{ docencia.curso }} - {{ docencia.universidad }} - {{ docencia.horas }} horas - {{ docencia.anio }}
+                            </div>
+                            <a href="{% url 'editar_docencia' docencia.id_docencia %}" class="btn-examinar">
+                                Examinar
+                            </a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -334,6 +338,7 @@
                     </div>
                 {% endif %}
             </div>
+            
 
             <div class="card-item">
                 <div class="titulo-section">Demeritos:</div>

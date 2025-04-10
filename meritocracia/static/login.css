@@ -8,7 +8,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     height: 100vh;
-    background-color: #f4f4f4;
+    background-color: #fff5f5; /* fondo suave rosado */
 }
 
 .login-container {
@@ -22,7 +22,7 @@ body {
 }
 
 .login-left {
-    background-color: #fff;
+    background-color: #fff0f0; /* blanco con un tinte rojo claro */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,23 +35,24 @@ body {
 
 .logo {
     font-size: 2rem;
-    color: #e85d04;
+    color: #c1121f; /* rojo oscuro vibrante */
     margin-bottom: 10px;
 }
 
 .login-form h2 {
     margin-bottom: 5px;
     font-size: 1.5rem;
-    color: #333;
+    color: #660708; /* rojo muy oscuro para texto fuerte */
 }
 
 .login-form p {
     margin-bottom: 20px;
     font-size: 0.9rem;
+    color: #7f1d1d;
 }
 
 .login-form a {
-    color: #e85d04;
+    color: #c1121f;
     text-decoration: none;
 }
 
@@ -60,15 +61,16 @@ body {
     margin-top: 15px;
     margin-bottom: 5px;
     font-size: 0.9rem;
-    color: #555;
+    color: #9e2a2b; /* rojo intermedio */
 }
 
 .login-form input[type="username"],
 .login-form input[type="password"] {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #faa2a2; /* borde rojo claro */
     border-radius: 5px;
+    background-color: #fffafa;
 }
 
 .remember-me {
@@ -80,12 +82,13 @@ body {
 .remember-me label {
     margin-left: 5px;
     font-size: 0.9rem;
+    color: #7f1d1d;
 }
 
 .login-button {
     width: 100%;
     padding: 10px;
-    background-color: #e85d04;
+    background-color: #d00000; /* rojo intenso */
     color: #fff;
     font-weight: bold;
     border: none;
@@ -99,16 +102,17 @@ body {
     margin-top: 10px;
     text-align: right;
     font-size: 0.85rem;
+    color: #a4161a;
 }
 
 footer {
     margin-top: 40px;
     font-size: 0.8rem;
-    color: #aaa;
+    color: #d3a0a0;
 }
 
 .login-right {
-    background: linear-gradient(to top, #03045e, #023e8a, #0077b6, #00b4d8);
+    background: linear-gradient(to top, #7f0000, #9d0208, #d00000, #e5383b);
     position: relative;
     overflow: hidden;
 }
