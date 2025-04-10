@@ -87,19 +87,20 @@ def registrar_juez(request):
     return render(request, "form_registro_juez.html")
     
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def registrar_antiguedad(request):
-    jueces = Juez.objects.all()
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+    
     if request.method == "POST":
-        juez_id = request.POST.get("juez") 
         fecha_inicio = request.POST.get("fecha_inicio")
         fecha_fin = request.POST.get("fecha_fin")
         puntaje = request.POST.get("puntaje", 1)
 
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-        
         Antiguedad.objects.create(
             juez=juez,
             fecha_inicio=fecha_inicio,
@@ -109,26 +110,27 @@ def registrar_antiguedad(request):
 
         return redirect("/meritopj") 
 
-    return render(request, "form_antiguedad_juez.html",{"jueces": jueces})
+    return render(request, "form_antiguedad_juez.html")
 
 
+
+from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def registrar_grado_academico(request):
-    jueces = Juez.objects.all()
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
 
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         titulo_gd = request.POST.get("titulo_gd")
         tipo = request.POST.get("tipo")
         anio = request.POST.get("anio")
-        puntaje = request.POST.get("puntaje")
-        documento = request.FILES.get('documento')  # Obtener el archivo PDF
+        documento = request.FILES.get("documento")
 
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
-        # Validar y calcular puntaje si por alguna razón viene vacío o alterado
+        # Calcular el puntaje según el tipo
         if tipo == 'DOJ':
             puntaje = 9
         elif tipo == 'DONJ':
@@ -142,47 +144,46 @@ def registrar_grado_academico(request):
         else:
             puntaje = 0
 
-        # Guardar el archivo si se sube
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
 
-        # Crear el registro en la base de datos
         GradoAcademico.objects.create(
             juez=juez,
             titulo_gd=titulo_gd,
             tipo=tipo,
             anio=int(anio),
-            puntaje=float(puntaje),
-            documento=documento_url if documento else None  # Guardar la URL del documento
+            puntaje=puntaje,
+            documento=documento_url
         )
 
         return redirect("/meritopj/")
 
-    return render(request, "form_grado_academico_juez.html", {"jueces": jueces})
+    return render(request, "form_grado_academico_juez.html")
 
+
+@login_required
 def registrar_estudios_magistratura(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         programa = request.POST.get("programa")
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
-        puntaje = request.POST.get("puntaje")
-        documento = request.FILES.get('documento')  # Obtener el archivo PDF
-
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
+        documento = request.FILES.get("documento")
 
         # Validar que la nota sea un número válido
         try:
             nota = float(nota)
-        except ValueError:
+        except (ValueError, TypeError):
             return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
 
-        # Asignar puntaje según el rango de la nota
+        # Asignar puntaje según la nota
         if 19 <= nota <= 20:
             puntaje = 8
         elif 17 <= nota <= 18:
@@ -192,47 +193,52 @@ def registrar_estudios_magistratura(request):
         elif 13 <= nota <= 14:
             puntaje = 2
         else:
-            puntaje = 0  # Nota menor a 13 no otorga puntaje
+            puntaje = 0
 
-        # Guardar el archivo si se sube
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
 
-        # Crear el registro
         EstudiosMagistratura.objects.create(
             juez=juez,
             programa=programa,
             anio=int(anio),
             nota=nota,
             puntaje=puntaje,
-            documento=documento_url if documento else None,
+            documento=documento_url,
             estado='PENDIENTE'
         )
 
         return redirect("/meritopj/")
 
-    jueces = Juez.objects.all()
-    return render(request, "form_estudios_magistratura.html", {"jueces": jueces})
+    return render(request, "form_estudios_magistratura.html")
 
 def registrar_estudio_perfeccionamiento(request):
     return render(request, "form_estudio_perfeccionamiento.html")
 
+@login_required
 def registrar_doctorado(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
         nombre = request.POST.get("nombre")
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
-        documento = request.FILES.get('documento')  
+        documento = request.FILES.get("documento")
 
+        # Validar nota
         try:
             nota = float(nota)
-        except ValueError:
-            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
+        except (ValueError, TypeError):
+            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida."})
 
+        # Asignar puntaje
         if nota < 15:
             puntaje = 0.5
         elif 15 <= nota <= 18:
@@ -240,58 +246,60 @@ def registrar_doctorado(request):
         else:
             puntaje = 1.0
 
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
+        # Verificar si el estudio de perfeccionamiento existe
         try:
             estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
         except EstudioPerfeccionamiento.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe."})
 
-        # Guardar el archivo si se sube
+        # Subir archivo
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
 
+        # Crear el doctorado
         EstudioDoctorado.objects.create(
             juez=juez,
             id_estudioperfeccionamiento=estudio_perfeccionamiento,
             nombre=nombre,
             anio=int(anio),
-            nota=float(nota),
-            puntaje=float(puntaje),
-            documento=documento_url if documento else None,
-            estado='PENDIENTE'
+            nota=nota,
+            puntaje=puntaje,
+            documento=documento_url,
+            estado="PENDIENTE"
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
 
-    jueces = Juez.objects.all()
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
 
     return render(request, "form_estudio_doctorado.html", {
-        "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
-
+@login_required
 def registrar_maestria(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
         nombre = request.POST.get("nombre")
         anio = request.POST.get("anio")
         nota = request.POST.get("nota")
-        documento = request.FILES.get('documento')  # Obtener el archivo PDF
+        documento = request.FILES.get("documento")
 
+        # Validación de nota
         try:
             nota = float(nota)
-        except ValueError:
-            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
+        except (ValueError, TypeError):
+            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida."})
 
+        # Asignación de puntaje
         if nota < 15:
             puntaje = 0.5
         elif 15 <= nota <= 18:
@@ -299,46 +307,47 @@ def registrar_maestria(request):
         else:
             puntaje = 1.0
 
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
+        # Obtener estudio de perfeccionamiento
         try:
             estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
         except EstudioPerfeccionamiento.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe."})
 
-        # Guardar el archivo si se sube
+        # Guardar archivo
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
 
+        # Crear el registro de maestría
         EstudioMaestria.objects.create(
             juez=juez,
             id_estudioperfeccionamiento=estudio_perfeccionamiento,
             nombre=nombre,
             anio=int(anio),
-            nota=float(nota),
-            puntaje=float(puntaje),
-            documento=documento_url if documento else None,
-            estado='PENDIENTE'
+            nota=nota,
+            puntaje=puntaje,
+            documento=documento_url,
+            estado="PENDIENTE"
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
 
-    jueces = Juez.objects.all()
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
 
     return render(request, "form_estudio_maestria.html", {
-        "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
+@login_required
 def registrar_pasantia(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")  
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")  
         nombre = request.POST.get("nombre")  
         tipo = request.POST.get("tipo")
@@ -346,79 +355,76 @@ def registrar_pasantia(request):
         nota = request.POST.get("nota")  
         documento = request.FILES.get('documento') 
 
+        # Validación de nota
         try:
-            nota = float(nota)  # Intentar convertir la nota a un número flotante
-        except ValueError:
-            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida"})
+            nota = float(nota)
+        except (ValueError, TypeError):
+            return render(request, "error.html", {"mensaje": "La nota ingresada no es válida."})
     
-        # Asignar puntaje según el tipo de pasantía
+        # Puntaje por tipo de pasantía
+        tipo = tipo.capitalize()
         if tipo == 'Nacional':
             puntaje = 0.75
         elif tipo == 'Internacional':
             puntaje = 1
         else:
-            puntaje = 0  # Puntaje por defecto si el tipo no es válido
+            puntaje = 0  # Tipo inválido
 
-        # Verificar si el juez existe
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
-        # Verificar si el estudio de perfeccionamiento existe
+        # Verificar existencia de estudio de perfeccionamiento
         try:
             estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
         except EstudioPerfeccionamiento.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe."})
 
-        # Guardar el archivo si se sube
+        # Guardar archivo si existe
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
-        # Crear el registro de la pasantía
+        # Crear registro de pasantía
         Pasantia.objects.create(
             juez=juez,
             id_estudioperfeccionamiento=estudio_perfeccionamiento,
             nombre=nombre,
             tipo=tipo,
             anio=int(anio),
-            nota=float(nota),
-            puntaje=float(puntaje),
+            nota=nota,
+            puntaje=puntaje,
             documento=documento_url,
             estado='PENDIENTE'
         )
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")  
 
-    jueces = Juez.objects.all()
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
     
     return render(request, "form_pasantia.html", {
-        "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
-
+@login_required
 def registrar_curso_especializacion(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento") 
         nombre = request.POST.get("nombre")  
         horas = request.POST.get("horas")  
         anio = request.POST.get("anio")  
-        documento = request.FILES.get('documento')  # Obtener el archivo PDF
+        documento = request.FILES.get('documento')
 
-        # Convertir las horas a número entero
+        # Validar horas
         try:
             horas = int(horas)
         except ValueError:
-            return render(request, "error.html", {"mensaje": "Las horas ingresadas no son válidas"})
+            return render(request, "error.html", {"mensaje": "Las horas ingresadas no son válidas."})
 
-        # Calcular puntaje según la cantidad de horas
+        # Calcular puntaje según horas
         if horas > 200:
             puntaje = 1
         elif 101 <= horas <= 200:
@@ -426,29 +432,22 @@ def registrar_curso_especializacion(request):
         elif 50 <= horas <= 100:
             puntaje = 0.5
         else:
-            puntaje = 0  # No asigna puntaje si las horas son menores a 50
+            puntaje = 0
 
-        # Obtener el juez
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
-        # Obtener el estudio de perfeccionamiento
+        # Validar estudio de perfeccionamiento
         try:
             estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
         except EstudioPerfeccionamiento.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe."})
 
-        # Guardar el archivo si se sube
+        # Guardar archivo si fue subido
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
-        # Crear y guardar el registro del curso de especialización
+        # Crear registro
         CursoEspecializacion.objects.create(
             juez=juez,
             id_estudioperfeccionamiento=estudio_perfeccionamiento,
@@ -462,23 +461,26 @@ def registrar_curso_especializacion(request):
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
 
-    jueces = Juez.objects.all()
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
-    
+
     return render(request, "form_especializacion.html", {
-        "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
+@login_required
 def registrar_certamen_academico(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
         tipo_participacion = request.POST.get("tipo_participacion")
         nombre = request.POST.get("nombre")
         tipo = request.POST.get("tipo")  # Nacional o Internacional
         anio = request.POST.get("anio")
-        documento = request.FILES.get('documento')  # Obtener el archivo PDF
+        documento = request.FILES.get('documento')
 
         # Calcular puntaje según el tipo de participación
         if tipo == 'Nacional':
@@ -488,27 +490,20 @@ def registrar_certamen_academico(request):
         else:
             puntaje = 0  # En caso de que no se haya seleccionado correctamente
 
-        # Obtener el juez
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
-        # Obtener el estudio de perfeccionamiento
+        # Validar estudio de perfeccionamiento
         try:
             estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
         except EstudioPerfeccionamiento.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe."})
 
-        # Guardar el archivo si se sube
+        # Guardar archivo si fue subido
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
-        # Crear y guardar el registro en la base de datos
+        # Crear y guardar el registro del certamen académico
         CertamenAcademico.objects.create(
             juez=juez,
             id_estudioperfeccionamiento=estudio_perfeccionamiento,
@@ -521,20 +516,22 @@ def registrar_certamen_academico(request):
             estado='PENDIENTE'
         )
 
-        return redirect("/meritopj/registrar_estudio_perfeccionamiento")  # Redirige al formulario de estudio de perfeccionamiento
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
 
-    # Obtener los jueces y estudios de perfeccionamiento para los selectores
-    jueces = Juez.objects.all()
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
 
     return render(request, "form_certamen_academico.html", {
-        "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
+@login_required
 def registrar_evento_academico(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
         nombre = request.POST.get("nombre")
         anio = request.POST.get("anio")
@@ -543,27 +540,20 @@ def registrar_evento_academico(request):
         # Puntaje fijo para todos los registros
         puntaje = 0.25
 
-        # Obtener el juez
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
-        # Obtener el estudio de perfeccionamiento
+        # Validar estudio de perfeccionamiento
         try:
             estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
         except EstudioPerfeccionamiento.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe."})
 
-        # Guardar el archivo si se sube
+        # Guardar archivo si fue subido
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
-        # Crear y guardar el registro en la base de datos
+        # Crear y guardar el registro del evento académico
         EventoAcademico.objects.create(
             juez=juez,
             id_estudioperfeccionamiento=estudio_perfeccionamiento,
@@ -574,20 +564,24 @@ def registrar_evento_academico(request):
             estado='PENDIENTE'
         )
 
-        return redirect("/meritopj/registrar_estudio_perfeccionamiento")  # Redirigir a otra página después del registro
+        return redirect("/meritopj/registrar_estudio_perfeccionamiento")
 
-    # Obtener los jueces y estudios de perfeccionamiento para mostrarlos en el formulario
-    jueces = Juez.objects.all()
+    # Obtener estudios de perfeccionamiento para mostrarlos en el formulario
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
 
     return render(request, "form_evento_academico.html", {
-        "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
+
+@login_required
 def registrar_estudio_ofimatica(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
         nivel = request.POST.get("nivel")
         nombre_estudio = request.POST.get("estudio")
@@ -602,25 +596,18 @@ def registrar_estudio_ofimatica(request):
         }
         puntaje = puntaje_dict.get(nivel, 0)  # Por defecto 0 si nivel no está definido
 
-        # Obtener el juez
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
-        # Obtener el estudio de perfeccionamiento
+        # Validar estudio de perfeccionamiento
         try:
             estudio_perfeccionamiento = EstudioPerfeccionamiento.objects.get(id_estudioperfeccionamiento=estudio_perfeccionamiento_id)
         except EstudioPerfeccionamiento.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe"})
+            return render(request, "error.html", {"mensaje": "El estudio de perfeccionamiento no existe."})
 
-        # Guardar el archivo si se sube
+        # Guardar archivo si fue subido
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
         # Crear y guardar el estudio de ofimática
         EstudioOfimatica.objects.create(
@@ -636,12 +623,10 @@ def registrar_estudio_ofimatica(request):
 
         return redirect("/meritopj/registrar_estudio_perfeccionamiento")
 
-    # Para el formulario
-    jueces = Juez.objects.all()
+    # Obtener los estudios de perfeccionamiento para mostrarlos en el formulario
     estudios_perfeccionamiento = EstudioPerfeccionamiento.objects.all()
 
     return render(request, "form_estudio_ofimatica.html", {
-        "jueces": jueces,
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
@@ -705,9 +690,14 @@ def registrar_estudio_idiomas(request):
     })
 
 
+@login_required
 def registrar_publicacion_juridica(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         tipo = request.POST.get("tipo")
         nombre = request.POST.get("nombre")
         documento = request.FILES.get('documento')  # Obtener archivo PDF
@@ -721,19 +711,12 @@ def registrar_publicacion_juridica(request):
         
         puntaje = puntajes.get(tipo, 0)  # Valor predeterminado de 0 si el tipo no es válido
 
-        # Validar existencia del juez
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
         # Guardar el archivo si se sube
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
         # Crear y guardar la publicación jurídica
         PublicacionJuridica.objects.create(
@@ -747,32 +730,27 @@ def registrar_publicacion_juridica(request):
 
         return redirect("/meritopj/registrar_publicacion_juridica")  # Redirige tras registrar
 
-    # Obtener lista de jueces para el formulario
-    jueces = Juez.objects.all()
+    return render(request, "form_publicacion_juridica.html")
 
-    return render(request, "form_publicacion_juridica.html", {"jueces": jueces})
-
+@login_required
 def registrar_distincion(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         nombre = request.POST.get("nombre")
         anio = request.POST.get("anio")
         documento = request.FILES.get('documento')  # Obtener archivo PDF si se sube
         puntaje = 0.5  # Puntaje fijo
 
-        # Validar que el juez exista
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
         # Guardar el archivo si se sube
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
         # Crear y guardar la distinción
         Distincion.objects.create(
@@ -786,13 +764,16 @@ def registrar_distincion(request):
 
         return redirect("/meritopj/registrar_distincion")  # Redirige al mismo formulario tras registrar
 
-    # Mostrar formulario con lista de jueces
-    jueces = Juez.objects.all()
-    return render(request, "form_distincion.html", {"jueces": jueces})
+    return render(request, "form_distincion.html")
 
+@login_required
 def registrar_docencia(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         curso = request.POST.get("curso")
         universidad = request.POST.get("universidad")
         anio = request.POST.get("anio")
@@ -806,21 +787,14 @@ def registrar_docencia(request):
         except ValueError:
             return render(request, "error.html", {"mensaje": "Las horas deben ser un número entero"})
 
-        # Obtener el juez
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
-
         # Guardar el archivo si se sube
+        documento_url = None
         if documento:
             fs = FileSystemStorage()
             filename = fs.save(documento.name, documento)
             documento_url = fs.url(filename)
-        else:
-            documento_url = None
 
-        # Guardar la docencia
+        # Crear y guardar la docencia
         Docencia.objects.create(
             juez=juez,
             curso=curso,
@@ -832,11 +806,9 @@ def registrar_docencia(request):
             estado='PENDIENTE'
         )
 
-        return redirect("/meritopj/registrar_docencia")  # Redirigir tras registrar
+        return redirect("/meritopj/registrar_docencia")  # Redirige tras registrar
 
-    # Mostrar formulario
-    jueces = Juez.objects.all()
-    return render(request, "form_docencia.html", {"jueces": jueces})
+    return render(request, "form_docencia.html")
 
 
 #def calcular_puntaje_total(juez_id):

@@ -17,13 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
+from django.views.generic import RedirectView 
 
 from meritocracia_pj import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('meritopj/', include('meritocracia.urls')),
-    path('accounts/', include('django.contrib.auth.urls'))
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('', RedirectView.as_view(url='/accounts/login/', permanent=False))
+
 ]
 
 if settings.DEBUG:

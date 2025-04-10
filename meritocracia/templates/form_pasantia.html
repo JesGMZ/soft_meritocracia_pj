@@ -18,13 +18,8 @@
         <form action="{% url 'registrar_pasantia' %}" method="POST" enctype="multipart/form-data" class="form">
             {% csrf_token %}
 
-            <!-- Selección de Juez -->
-            <label for="juez">Juez:</label>
-            <select id="juez" name="juez" required class="input">
-                {% for juez in jueces %}
-                <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
-                {% endfor %}
-            </select>
+            <label>Juez:</label>
+            <input type="text" value="{{ request.user.juez.nombres }} {{ request.user.juez.apellidos }}" disabled class="input">
 
             <!-- Selección de Estudio de Perfeccionamiento -->
             <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="3">

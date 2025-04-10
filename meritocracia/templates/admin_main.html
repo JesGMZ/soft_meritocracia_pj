@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'admin.css' %}">
+    <link rel="stylesheet" href="{% static 'admin_style.css' %}">
     <title>MERITOCRACIA</title>
 </head>
 <body>
@@ -14,35 +14,6 @@
 
     <!-- Contenido principal -->
     <div class="container">
-
-        <!-- Card para la tabla de Top 5 Jueces -->
-        <div class="card">
-            <div class="card-header">
-                <h3>Top 5 Jueces con Mayor Puntaje Total</h3>
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Posición</th>
-                            <th>Juez</th>
-                            <th>Puntaje Total</th>
-                            <th>ID Juez</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for juez in jueces_top_5 %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ juez.juez.nombres }}</td>
-                            <td>{{ juez.puntaje_total }}</td>
-                            <td>{{ juez.juez.id_juez }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
         <div class="card horizontal-card">
             <div class="card-header">

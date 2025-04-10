@@ -18,13 +18,9 @@
         <form action="{% url 'registrar_antiguedad' %}" method="POST" class="form">
             {% csrf_token %}
             
-            <label for="juez">Juez:</label>
-            <select id="juez" name="juez" required class="input">
-                {% for juez in jueces %}
-                <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
-                {% endfor %}
-            </select>
-        
+            <label>Juez:</label>
+            <input type="text" value="{{ request.user.juez.nombres }} {{ request.user.juez.apellidos }}" disabled class="input">
+            
             <label for="fecha_inicio">Fecha de Inicio:</label>
             <input type="date" id="fecha_inicio" name="fecha_inicio" required class="input">
         
@@ -35,6 +31,7 @@
         
             <input type="submit" value="Registrar Antigüedad" class="login-button">
         </form>
+        
     </div>
 
 </body>

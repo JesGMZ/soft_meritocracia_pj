@@ -19,14 +19,8 @@
             method="POST" class="form" enctype="multipart/form-data">
             {% csrf_token %}
         
-            <label for="juez">Juez:</label>
-            <select id="juez" name="juez" required class="input">
-                {% for juez in jueces %}
-                    <option value="{{ juez.id_juez }}">
-                        {{ juez.nombres }} {{ juez.apellidos }}
-                    </option>
-                {% endfor %}
-            </select>
+            <label>Juez:</label>
+            <input type="text" value="{{ request.user.juez.nombres }} {{ request.user.juez.apellidos }}" disabled class="input">
         
             <label for="programa">Programa de Magistratura:</label>
             <input type="text" id="programa" name="programa" required class="input">
