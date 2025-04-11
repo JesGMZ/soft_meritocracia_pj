@@ -252,13 +252,19 @@ class Docencia(models.Model):
 class Demeritos(models.Model):
     id_demerito = models.AutoField(primary_key=True)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
-    medida_disciplinaria = models.CharField(max_length=255)
     TIPOS = [
         ('AMONESTACION', 'Amonestación'),
         ('MULTA', 'Multa'),
         ('SUSPENSION', 'Suspensión')
     ]
+
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('VERIFICADO', 'Verificado'),
+    ]
+    
     tipo = models.CharField(max_length=20, choices=TIPOS)
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
     puntaje = models.FloatField()
 
 

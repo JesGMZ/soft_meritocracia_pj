@@ -811,6 +811,34 @@ def registrar_docencia(request):
     return render(request, "form_docencia.html")
 
 
+def registrar_demerito(request):
+    if request.method == "POST":
+        id_juez = request.POST.get("id_juez")
+        tipo = request.POST.get("tipo")
+        puntaje = request.POST.get("puntaje")
+
+        try:
+            juez = Juez.objects.get(id_juez=id_juez)
+        except Juez.DoesNotExist:
+            return render(request, "error.html", {"mensaje": "El juez no existe."})
+
+        try:
+            puntaje = float(puntaje)
+        except ValueError:
+            return render(request, "error.html", {"mensaje": "El puntaje debe ser un número válido."})
+
+        Demeritos.objects.create(
+            juez=juez,
+            tipo=tipo,
+            puntaje=puntaje,
+            estado='PENDIENTE'
+        )
+
+        return redirect("/meritopj/registrar_demerito")
+
+    jueces = Juez.objects.all()
+    return render(request, "form_demerito.html", {"jueces": jueces})
+
 #def calcular_puntaje_total(juez_id):
     juez = get_object_or_404(Juez, id_juez=juez_id)
 
@@ -908,18 +936,56 @@ def buscar_juez(request):
     return render(request, 'admin_mostrar_registros.html', {'jueces': jueces})
 
 
-def obtener_jueces_top_5():
+def obtener_jueces_ordenados():
     jueces = Juez.objects.all()  
     jueces_con_puntaje = []
-    
+
     for juez in jueces:
-        puntaje_total = PuntajeTotal.objects.filter(juez=juez).first()
-        jueces_con_puntaje.append({
-            'juez': juez,
-            'puntaje_total': puntaje_total.puntaje_total if puntaje_total else 0
-        })
-    
-    return sorted(jueces_con_puntaje, key=lambda x: x['puntaje_total'], reverse=True)[:5]
+        puntaje = PuntajeTotal.objects.filter(juez=juez).first()
+        if puntaje:
+            jueces_con_puntaje.append({
+                'juez': juez,
+                'puntaje_total': puntaje.puntaje_total,
+                'puntaje_antiguedad': puntaje.puntaje_antiguedad,
+                'puntaje_grado_academico': puntaje.puntaje_grado_academico,
+                'puntaje_estudios_magistratura': puntaje.puntaje_estudios_magistratura,
+                'puntaje_estudios_doctorado': puntaje.puntaje_estudios_doctorado,
+                'puntaje_estudios_maestria': puntaje.puntaje_estudios_maestria,
+                'puntaje_pasantia': puntaje.puntaje_pasantia,
+                'puntaje_curso_especializacion': puntaje.puntaje_curso_especializacion,
+                'puntaje_certamen_academico': puntaje.puntaje_certamen_academico,
+                'puntaje_evento_academico': puntaje.puntaje_evento_academico,
+                'puntaje_ofimatica': puntaje.puntaje_ofimatica,
+                'puntaje_idioma': puntaje.puntaje_idioma,
+                'puntaje_publicaciones': puntaje.puntaje_publicaciones,
+                'puntaje_distincion': puntaje.puntaje_distincion,
+                'puntaje_docencia': puntaje.puntaje_docencia,
+                'puntaje_demeritos': puntaje.puntaje_demeritos,
+            })
+        else:
+            # Si no tiene puntaje registrado
+            jueces_con_puntaje.append({
+                'juez': juez,
+                'puntaje_total': 0,
+                'puntaje_antiguedad': 0,
+                'puntaje_grado_academico': 0,
+                'puntaje_estudios_magistratura': 0,
+                'puntaje_estudios_doctorado': 0,
+                'puntaje_estudios_maestria': 0,
+                'puntaje_pasantia': 0,
+                'puntaje_curso_especializacion': 0,
+                'puntaje_certamen_academico': 0,
+                'puntaje_evento_academico': 0,
+                'puntaje_ofimatica': 0,
+                'puntaje_idioma': 0,
+                'puntaje_publicaciones': 0,
+                'puntaje_distincion': 0,
+                'puntaje_docencia': 0,
+                'puntaje_demeritos': 0,
+            })
+
+    return sorted(jueces_con_puntaje, key=lambda x: x['puntaje_total'], reverse=True)
+
 
 def contar_jueces(request):
     cantidad_jueces = Juez.objects.count()
@@ -927,21 +993,22 @@ def contar_jueces(request):
         'cantidad_jueces': cantidad_jueces,
     }
     return render(request, 'admin_main.html', context)
-    
+
 def top_jueces(request):
-    jueces = obtener_jueces_top_5() 
-    return render(request, 'admin_main.html', {'jueces_top_5': jueces})
+    jueces = obtener_jueces_ordenados() 
+    return render(request, 'admin_main.html', {'jueces_top': jueces})
+
 
 @login_required
 def admin_view(request):
     if not request.user.is_superuser:
         return redirect('login')
     
-    jueces_top_5 = obtener_jueces_top_5()
+    jueces_top = obtener_jueces_ordenados()
     cantidad_jueces = Juez.objects.count()
     
     return render(request, 'admin_main.html', {
-        'jueces_top_5': jueces_top_5,
+        'jueces_top': jueces_top,
         'cantidad_jueces': cantidad_jueces
     })
 

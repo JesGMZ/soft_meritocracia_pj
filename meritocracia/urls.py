@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import admin_view, buscar_juez, editar_certamen_academico, editar_curso_especializacion, editar_distincion, editar_docencia, editar_doctorado, editar_estudio_idiomas, editar_estudio_ofimatica, editar_estudios_magistratura, editar_evento_academico, editar_grado_academico, editar_maestria, editar_pasantia, editar_publicacion_juridica, juez_dashboard, login_view, logout_view, registrar_certamen_academico, registrar_curso_especializacion, registrar_distincion, registrar_docencia, registrar_doctorado, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_pasantia, registrar_publicacion_juridica
+from .views import admin_view, buscar_juez, editar_certamen_academico, editar_curso_especializacion, editar_distincion, editar_docencia, editar_doctorado, editar_estudio_idiomas, editar_estudio_ofimatica, editar_estudios_magistratura, editar_evento_academico, editar_grado_academico, editar_maestria, editar_pasantia, editar_publicacion_juridica, juez_dashboard, login_view, logout_view, registrar_certamen_academico, registrar_curso_especializacion, registrar_demerito, registrar_distincion, registrar_docencia, registrar_doctorado, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_pasantia, registrar_publicacion_juridica
 
 urlpatterns = [
     path('', meritopj),
@@ -36,5 +36,7 @@ urlpatterns = [
     path('editar_estudio_idiomas/<int:id_idioma>/', editar_estudio_idiomas, name='editar_estudio_idiomas'),
     path('editar_publicacion_juridica/<int:id_publicacionjuridica>/', editar_publicacion_juridica, name='editar_publicacion_juridica'),
     path('editar_distincion/<int:id_distincion>/', editar_distincion, name='editar_distincion'),
-    path('editar_docencia/<int:id_docencia>/', editar_docencia, name='editar_docencia')
+    path('editar_docencia/<int:id_docencia>/', editar_docencia, name='editar_docencia'),
+    path("registrar_demerito/", registrar_demerito, name="registrar_demerito")
+
 ]

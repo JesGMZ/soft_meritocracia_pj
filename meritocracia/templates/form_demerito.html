@@ -1,0 +1,71 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Demérito</title>
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h2>Registro de Demérito</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_demerito' %}" method="POST" class="form">
+            {% csrf_token %}
+
+            <label for="id_juez">Seleccionar Juez:</label>
+            <select id="id_juez" name="id_juez" required class="input">
+                <option value="">Seleccione un juez</option>
+                {% for juez in jueces %}
+                    <option value="{{ juez.id_juez }}">{{ juez.nombres }} {{ juez.apellidos }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Tipo de Demérito -->
+            <label for="tipo">Tipo de Demérito:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="asignarPuntaje()">
+                <option value="">Seleccione un tipo</option>
+                <option value="AMONESTACION">Amonestación</option>
+                <option value="MULTA">Multa</option>
+                <option value="SUSPENSION">Suspensión</option>
+            </select>
+
+            <!-- Puntaje -->
+            <label for="puntaje">Puntaje:</label>
+            <input type="number" step="0.01" id="puntaje" name="puntaje" required class="input" readonly>
+
+            <input type="submit" value="Registrar Demérito" class="login-button">
+        </form>
+    </div>
+
+    <script>
+        function asignarPuntaje() {
+            const tipo = document.getElementById("tipo").value;
+            let puntaje = 0;
+
+            switch (tipo) {
+                case "AMONESTACION":
+                    puntaje = 1.0;
+                    break;
+                case "MULTA":
+                    puntaje = 2.5;
+                    break;
+                case "SUSPENSION":
+                    puntaje = 4.0;
+                    break;
+                default:
+                    puntaje = 0;
+            }
+
+            document.getElementById("puntaje").value = puntaje.toFixed(1);
+        }
+
+        window.onload = asignarPuntaje;
+    </script>
+
+</body>
+</html>

@@ -111,3 +111,17 @@ body::before {
     background-color: #ffe5e5;
     cursor: default;
 }
+
+.card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Tamaño fijo para cada tarjeta */
+.card-grid .card {
+    width: 200px;
+    height: 180px;
+    justify-content: center; /* centra contenido verticalmente */
+}

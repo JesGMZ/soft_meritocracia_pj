@@ -5,34 +5,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'admin_style.css' %}">
+    <link rel="stylesheet" href="{% static 'admin_estilos.css' %}">
     <title>MERITOCRACIA</title>
 </head>
 <body>
 
     {% include 'navbar.html' %}
 
-    <!-- Contenido principal -->
     <div class="container">
 
-        <div class="card horizontal-card">
-            <div class="card-header">
-                <h3>Cantidad de Registros de Jueces</h3>
-            </div>
-            <div class="card-body">
-                <h2>{{ cantidad_jueces }}</h2>
+        <!-- Ranking de Jueces -->
+        <div class="card">
+            <h3>Ranking de Jueces</h3>
+            <div class="table-container">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Juez</th>
+                            <th>Antigüedad</th>
+                            <th>Grado Académico</th>
+                            <th>Magistratura</th>
+                            <th>Doctorado</th>
+                            <th>Maestría</th>
+                            <th>Pasantía</th>
+                            <th>Especialización</th>
+                            <th>Certamen</th>
+                            <th>Eventos</th>
+                            <th>Ofimática</th>
+                            <th>Idioma</th>
+                            <th>Publicaciones</th>
+                            <th>Distinción</th>
+                            <th>Docencia</th>
+                            <th>Deméritos</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for juez in jueces_top %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ juez.juez.nombres }} {{ juez.juez.apellidos }}</td>
+                                <td>{{ juez.puntaje_antiguedad }}</td>
+                                <td>{{ juez.puntaje_grado_academico }}</td>
+                                <td>{{ juez.puntaje_estudios_magistratura }}</td>
+                                <td>{{ juez.puntaje_estudios_doctorado }}</td>
+                                <td>{{ juez.puntaje_estudios_maestria }}</td>
+                                <td>{{ juez.puntaje_pasantia }}</td>
+                                <td>{{ juez.puntaje_curso_especializacion }}</td>
+                                <td>{{ juez.puntaje_certamen_academico }}</td>
+                                <td>{{ juez.puntaje_evento_academico }}</td>
+                                <td>{{ juez.puntaje_ofimatica }}</td>
+                                <td>{{ juez.puntaje_idioma }}</td>
+                                <td>{{ juez.puntaje_publicaciones }}</td>
+                                <td>{{ juez.puntaje_distincion }}</td>
+                                <td>{{ juez.puntaje_docencia }}</td>
+                                <td>{{ juez.puntaje_demeritos }}</td>
+                                <td>{{ juez.puntaje_total }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="18">No hay jueces registrados aún.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <a href="{% url 'registrar_juez' %}" class="card mt-3">
-            <img src="{% static 'icons/icon_juez.png' %}" alt="Juez">
-            <span>Registro de Jueces</span>
-        </a>
+        <div class="card-grid">
+            <a href="{% url 'registrar_juez' %}" class="card">
+                <img src="{% static 'icons/icon_juez.png' %}" alt="Juez">
+                <span>Registro de Jueces</span>
+            </a>
         
-        <a href="{% url 'buscar_juez' %}" class="card mt-3">
-            <img src="{% static 'icons/icon_consulta.png' %}" alt="Consulta de Registros">
-            <span>Consulta de Registros</span>
-        </a>
+            <a href="{% url 'registrar_demerito' %}" class="card">
+                <img src="{% static 'icons/icon_demerito.png' %}" alt="Demerito">
+                <span>Registro de Deméritos</span>
+            </a>
+        
+            <a href="{% url 'buscar_juez' %}" class="card">
+                <img src="{% static 'icons/icon_consulta.png' %}" alt="Consulta de Registros">
+                <span>Consulta de Registros</span>
+            </a>
+        </div>
 
     </div>
 
