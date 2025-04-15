@@ -55,6 +55,12 @@
             <p>Documento actual: <a href="{{ estudio.documento }}" target="_blank">Ver PDF</a></p>
             {% endif %}
 
+            <label for="estado">Estado:</label>
+            <select name="estado" id="estado" required>
+                <option value="PENDIENTE" {% if grado.estado == "PENDIENTE" %}selected{% endif %}>Pendiente</option>
+                <option value="VERIFICADO" {% if grado.estado == "VERIFICADO" %}selected{% endif %}>Verificado</option>
+            </select>
+
             <!-- Campo oculto para el puntaje -->
             <input type="hidden" id="puntaje" name="puntaje" value="{{ estudio.puntaje }}">
 

@@ -59,6 +59,12 @@
             <!-- Campo oculto para el puntaje -->
             <input type="hidden" id="puntaje" name="puntaje" value="{{ estudio.puntaje }}">
 
+            <label for="estado">Estado:</label>
+                <select name="estado" id="estado" required>
+                    <option value="PENDIENTE" {% if grado.estado == "PENDIENTE" %}selected{% endif %}>Pendiente</option>
+                    <option value="VERIFICADO" {% if grado.estado == "VERIFICADO" %}selected{% endif %}>Verificado</option>
+                </select>
+
             <!-- Mostrar Puntaje Calculado -->
             <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">{{ estudio.puntaje }}</span></p>
 

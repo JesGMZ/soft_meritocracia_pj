@@ -1,4 +1,5 @@
 
+from datetime import datetime
 from django.http import JsonResponse
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import get_object_or_404, render, redirect
@@ -100,6 +101,27 @@ def registrar_antiguedad(request):
         fecha_inicio = request.POST.get("fecha_inicio")
         fecha_fin = request.POST.get("fecha_fin")
         puntaje = request.POST.get("puntaje", 1)
+
+        formato_fecha = "%Y-%m-%d"  
+        inicio = datetime.strptime(fecha_inicio, formato_fecha)
+        fin = datetime.strptime(fecha_fin, formato_fecha)
+        años = fin.year - inicio.year
+
+        if juez.cargo == 'Juez Superior':
+            if años <= 10:
+                puntaje = años * 0.5
+            else:
+                puntaje = años * 1
+        elif juez.cargo == 'Juez de Paz Letrado':
+            if años <= 5:
+                puntaje = años * 0.5
+            else:
+                puntaje = años * 1
+        elif juez.cargo == 'Juez Especializado':
+            if años <= 2:
+                puntaje = años * 0.5
+            else:
+                puntaje = años * 1
 
         Antiguedad.objects.create(
             juez=juez,
@@ -631,8 +653,12 @@ def registrar_estudio_ofimatica(request):
     })
 
 def registrar_estudio_idiomas(request):
+    try:
+        juez = request.user.juez
+    except Juez.DoesNotExist:
+        return render(request, "error.html", {"mensaje": "Este usuario no está asociado a un juez."})
+    
     if request.method == "POST":
-        juez_id = request.POST.get("juez")
         estudio_perfeccionamiento_id = request.POST.get("estudio_perfeccionamiento")
         nivel = request.POST.get("nivel")
         nombre_estudio = request.POST.get("estudio")
@@ -646,12 +672,6 @@ def registrar_estudio_idiomas(request):
             "Avanzado": 1.0
         }
         puntaje = puntaje_dict.get(nivel, 0)  # Por defecto 0 si nivel no está definido
-
-        # Obtener el juez
-        try:
-            juez = Juez.objects.get(id_juez=juez_id)
-        except Juez.DoesNotExist:
-            return render(request, "error.html", {"mensaje": "El juez no existe"})
 
         # Obtener el estudio de perfeccionamiento
         try:
@@ -937,13 +957,13 @@ def buscar_juez(request):
 
 
 def obtener_jueces_ordenados():
-    jueces = Juez.objects.all()  
+    jueces = Juez.objects.all()
     jueces_con_puntaje = []
 
     for juez in jueces:
         puntaje = PuntajeTotal.objects.filter(juez=juez).first()
         if puntaje:
-            jueces_con_puntaje.append({
+            juez_data = {
                 'juez': juez,
                 'puntaje_total': puntaje.puntaje_total,
                 'puntaje_antiguedad': puntaje.puntaje_antiguedad,
@@ -961,10 +981,9 @@ def obtener_jueces_ordenados():
                 'puntaje_distincion': puntaje.puntaje_distincion,
                 'puntaje_docencia': puntaje.puntaje_docencia,
                 'puntaje_demeritos': puntaje.puntaje_demeritos,
-            })
+            }
         else:
-            # Si no tiene puntaje registrado
-            jueces_con_puntaje.append({
+            juez_data = {
                 'juez': juez,
                 'puntaje_total': 0,
                 'puntaje_antiguedad': 0,
@@ -982,9 +1001,41 @@ def obtener_jueces_ordenados():
                 'puntaje_distincion': 0,
                 'puntaje_docencia': 0,
                 'puntaje_demeritos': 0,
-            })
+            }
 
-    return sorted(jueces_con_puntaje, key=lambda x: x['puntaje_total'], reverse=True)
+        # Suma para CASO 1 (sin incluir total ni antigüedad)
+        juez_data['puntaje_desempate'] = (
+            juez_data['puntaje_grado_academico'] +
+            juez_data['puntaje_estudios_magistratura'] +
+            juez_data['puntaje_estudios_doctorado'] +
+            juez_data['puntaje_estudios_maestria'] +
+            juez_data['puntaje_pasantia'] +
+            juez_data['puntaje_curso_especializacion'] +
+            juez_data['puntaje_certamen_academico'] +
+            juez_data['puntaje_evento_academico'] +
+            juez_data['puntaje_ofimatica'] +
+            juez_data['puntaje_idioma'] +
+            juez_data['puntaje_publicaciones'] +
+            juez_data['puntaje_distincion'] +
+            juez_data['puntaje_docencia'] +
+            juez_data['puntaje_demeritos']
+        )
+
+        jueces_con_puntaje.append(juez_data)
+
+    
+    jueces_ordenados = sorted(
+        jueces_con_puntaje,
+        key=lambda x: (
+            -x['puntaje_total'],                      # 1. Mayor puntaje total
+            -x['puntaje_desempate'],                  # 2. Mayor puntaje sumado (CASO 1)
+            x['puntaje_demeritos'],                   # 3. Menor demeritos (CASO 2)
+            -x['puntaje_antiguedad'],                 
+        )
+    )
+
+    return jueces_ordenados
+
 
 
 def contar_jueces(request):
