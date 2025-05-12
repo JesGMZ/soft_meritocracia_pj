@@ -6,11 +6,13 @@
     <meta charset="UTF-8">
     <title>Registro de Demérito</title>
     <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'botones_vistas.css' %}">
 </head>
 <body>
 
     {% include 'navbar.html' %}
 
+    <a href="{% url 'admin_view' %}" class="btn-volver">← Volver</a>
     <h2>Registro de Demérito</h2>
 
     <div class="container">

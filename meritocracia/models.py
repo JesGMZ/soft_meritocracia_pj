@@ -20,6 +20,12 @@ class Juez(models.Model):
     def __str__(self):
         return f"{self.apellidos}, {self.nombres}"  
 
+class Vigencia(models.Model):
+    idvigencia = models.AutoField(primary_key=True)
+    fecha_minima = models.DateField()
+    fecha_maxima = models.DateField()
+    estado = models.CharField(max_length=100, choices=[('Activo', 'Activo'), ('Inactivo', 'Inactivo')], default='Activo')
+
 class Antiguedad(models.Model):
     id_antiguedad = models.AutoField(primary_key=True)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
@@ -84,6 +90,7 @@ class EstudioPerfeccionamiento(models.Model):
 class EstudioDoctorado(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_estudiodoctorado = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
     anio = models.IntegerField()
@@ -99,6 +106,7 @@ class EstudioDoctorado(models.Model):
 class EstudioMaestria(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_estudiomaestria = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
     anio = models.IntegerField()
@@ -114,6 +122,7 @@ class EstudioMaestria(models.Model):
 class Pasantia(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_pasantia = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
     tipo = models.CharField(max_length=50, choices=[('Nacional', 'Nacional'), ('Internacional', 'Internacional')])
@@ -130,6 +139,7 @@ class Pasantia(models.Model):
 class CursoEspecializacion(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_cursoespecializacion = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
     horas = models.IntegerField()
@@ -145,6 +155,7 @@ class CursoEspecializacion(models.Model):
 class CertamenAcademico(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_certamenacademico = models.AutoField(primary_key=True)
     tipo_participacion = models.CharField(max_length=50, choices=[('Expositor', 'Expositor'), ('Ponente', 'Ponente'), ('Panelista', 'Panelista')])
     nombre = models.CharField(max_length=255)
@@ -161,6 +172,7 @@ class CertamenAcademico(models.Model):
 class EventoAcademico(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_eventoacademico = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
     anio = models.IntegerField()
@@ -175,6 +187,7 @@ class EventoAcademico(models.Model):
 class EstudioOfimatica(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_ofimatica = models.AutoField(primary_key=True)
     nivel = models.CharField(max_length=50, choices=[('Básico', 'Básico'), ('Intermedio', 'Intermedio'), ('Avanzado', 'Avanzado')])
     estudio = models.CharField(max_length=255)  # Nombre del curso de ofimática
@@ -190,6 +203,7 @@ class EstudioOfimatica(models.Model):
 class EstudioIdioma(models.Model):
     id_estudioperfeccionamiento = models.ForeignKey(EstudioPerfeccionamiento, on_delete=models.CASCADE)
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     id_idioma = models.AutoField(primary_key=True)
     nivel = models.CharField(max_length=50, choices=[('Básico', 'Básico'), ('Intermedio', 'Intermedio'), ('Avanzado', 'Avanzado')])
     estudio = models.CharField(max_length=255)  # Nombre del idioma
@@ -235,6 +249,7 @@ class Distincion(models.Model):
 
 class Docencia(models.Model):
     id_docencia = models.AutoField(primary_key=True)
+    vigencia = models.ForeignKey(Vigencia, on_delete=models.CASCADE, to_field='idvigencia')
     juez = models.ForeignKey(Juez, on_delete=models.CASCADE, to_field='id_juez')
     curso = models.CharField(max_length=255)
     universidad = models.CharField(max_length=255)
@@ -288,3 +303,103 @@ class PuntajeTotal(models.Model):
     puntaje_demeritos = models.FloatField(default=0)
     
     puntaje_total = models.FloatField(default=0)
+
+
+class Antiguedad_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    js_puntaje_min = models.FloatField()
+    js_puntaje_max = models.FloatField()
+    jpl_puntaje_min = models.FloatField()
+    jpl_puntaje_max = models.FloatField()
+    je_puntaje_min = models.FloatField()
+    je_puntaje_max = models.FloatField()
+
+class GradoAcademico_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    doj_puntaje = models.FloatField()
+    donj_puntaje = models.FloatField()
+    maj_puntaje = models.FloatField()
+    manj_puntaje = models.FloatField()
+    tinj_puntaje = models.FloatField()
+
+class Magistratura_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_alto = models.FloatField()
+    puntaje_semialto = models.FloatField()
+    puntaje_medio = models.FloatField()
+    puntaje_bajo = models.FloatField()
+
+class Doctorado_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_alto = models.FloatField()
+    puntaje_medio = models.FloatField()
+    puntaje_bajo = models.FloatField()
+
+class Maestria_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_alto = models.FloatField()
+    puntaje_medio = models.FloatField()
+    puntaje_bajo = models.FloatField()
+
+class Pasantia_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_alto = models.FloatField()
+    puntaje_bajo = models.FloatField()
+
+class CursoEspecializacion_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_alto = models.FloatField()
+    puntaje_medio = models.FloatField()
+    puntaje_bajo = models.FloatField()
+
+class CertamenAcademico_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_alto = models.FloatField()
+    puntaje_bajo = models.FloatField()
+
+class EventoAcademico_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje = models.FloatField()
+
+class Ofimatica_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_basico = models.FloatField()
+    puntaje_intermedio = models.FloatField()
+    puntaje_avanzado = models.FloatField()
+
+class Idiomas_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_basico = models.FloatField()
+    puntaje_intermedio = models.FloatField()
+    puntaje_avanzado = models.FloatField()
+
+class PublicacionJuridica_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje_libro = models.FloatField()
+    puntaje_revista = models.FloatField()
+    puntaje_merito = models.FloatField()
+
+class Distincion_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje = models.FloatField()
+
+class Docencia_valor_puntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    puntaje = models.FloatField()
+
+class ValorizacionPuntaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    valor_antiguedad = models.ForeignKey(Antiguedad_valor_puntaje, on_delete=models.CASCADE)
+    valor_grado_academico = models.ForeignKey(GradoAcademico_valor_puntaje, on_delete=models.CASCADE)
+    valor_magistratura = models.ForeignKey(Magistratura_valor_puntaje, on_delete=models.CASCADE)
+    valor_doctorado = models.ForeignKey(Doctorado_valor_puntaje, on_delete=models.CASCADE)
+    valor_maestria = models.ForeignKey(Maestria_valor_puntaje, on_delete=models.CASCADE)
+    valor_pasantia = models.ForeignKey(Pasantia_valor_puntaje, on_delete=models.CASCADE)
+    valor_curso_especializacion = models.ForeignKey(CursoEspecializacion_valor_puntaje, on_delete=models.CASCADE)
+    valor_certamen_academico = models.ForeignKey(CertamenAcademico_valor_puntaje, on_delete=models.CASCADE)
+    valor_evento_academico = models.ForeignKey(EventoAcademico_valor_puntaje, on_delete=models.CASCADE)
+    valor_ofimatica = models.ForeignKey(Ofimatica_valor_puntaje, on_delete=models.CASCADE)
+    valor_idiomas = models.ForeignKey(Idiomas_valor_puntaje, on_delete=models.CASCADE)
+    valor_publicacion_juridica = models.ForeignKey(PublicacionJuridica_valor_puntaje, on_delete=models.CASCADE)
+    valor_distincion = models.ForeignKey(Distincion_valor_puntaje, on_delete=models.CASCADE)
+    valor_docencia = models.ForeignKey(Docencia_valor_puntaje, on_delete=models.CASCADE)

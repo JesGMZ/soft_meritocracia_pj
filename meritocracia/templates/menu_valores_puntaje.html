@@ -1,0 +1,86 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'pagina_main.css' %}">
+    <title>Gestión de Puntajes</title>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <a href="{% url 'mostrar_puntaje_antiguedad' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Antigüedad">
+            <span>Puntajes de Antigüedad</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_certamenacademico' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Certamen Académico">
+            <span>Puntajes de Certamen Académico</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_distincion' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Distinción">
+            <span>Puntajes de Distinción</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_docencia' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Docencia">
+            <span>Puntajes de Docencia</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_doctorado' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Doctorado">
+            <span>Puntajes de Doctorado</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_eventoacademico' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Evento Académico">
+            <span>Puntajes de Evento Académico</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_gradoacademico' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Grado Académico">
+            <span>Puntajes de Grado Académico</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_idiomas' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Idiomas">
+            <span>Puntajes de Idiomas</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_maestria' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Maestría">
+            <span>Puntajes de Maestría</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_magistratura' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Magistratura">
+            <span>Puntajes de Magistratura</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_ofimatica' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Ofimática">
+            <span>Puntajes de Ofimática</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_pasantia' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Pasantía">
+            <span>Puntajes de Pasantía</span>
+        </a>
+
+        <a href="{% url 'mostrar_puntaje_publicacionjuridica' %}" class="card">
+            <img src="{% static 'icons/puntaje.png' %}" alt="Publicación Jurídica">
+            <span>Puntajes de Publicación Jurídica</span>
+        </a>
+    </div>
+
+</body>
+</html>
+
+</html>

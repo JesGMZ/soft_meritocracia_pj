@@ -1,0 +1,18 @@
+.btn-volver {
+    background-color: #6c757d; /* Bootstrap secondary */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .btn-volver:hover {
+    background-color: #5a6268;
+    transform: scale(1.03);
+    text-decoration: none;
+    color: #fff;
+  }

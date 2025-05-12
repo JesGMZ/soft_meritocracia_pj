@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Puntajes de Publicación Jurídica</title>
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'tabla_vigencias.css' %}">
+    <link rel="stylesheet" href="{% static 'botones_vistas.css' %}">
+    <style>
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<a href="{% url 'admin_view' %}" class="btn-volver">← Volver</a>
+
+<h2>Registrar Puntajes de Publicación Jurídica</h2>
+
+<div class="container">
+    <form action="{% url 'registrar_puntaje_publicacionjuridica' %}" method="POST">
+        {% csrf_token %}
+        
+        <label for="puntaje_libro">Puntaje Libro:</label>
+        <input type="number" step="0.001" name="puntaje_libro" required class="input">
+
+        <label for="puntaje_revista">Puntaje Revista:</label>
+        <input type="number" step="0.001" name="puntaje_revista" required class="input">
+
+        <label for="puntaje_merito">Puntaje Mérito:</label>
+        <input type="number" step="0.001" name="puntaje_merito" required class="input">
+
+        <input type="submit" value="Registrar Puntajes" class="login-button">
+    </form>
+</div>
+
+<h2 style="margin-top: 40px;">Puntajes Registrados</h2>
+<div class="container">
+    <table class="tabla">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Puntaje Libro</th>
+                <th>Puntaje Revista</th>
+                <th>Puntaje Mérito</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in registros %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.puntaje_libro }}</td>
+                <td>{{ r.puntaje_revista }}</td>
+                <td>{{ r.puntaje_merito }}</td>
+                <td>
+                    <button type="button"
+                            class="btn-editar"
+                            data-id="{{ r.id }}"
+                            data-libro="{{ r.puntaje_libro }}"
+                            data-revista="{{ r.puntaje_revista }}"
+                            data-merito="{{ r.puntaje_merito }}">
+                        Editar
+                    </button>
+                    <a href="{% url 'eliminar_publicacionjuridica_valor_puntaje' r.id %}" class="btn-eliminar">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay registros.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal de edición -->
+<div id="modal-editar" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span id="cerrar-modal" class="close">&times;</span>
+        <h2>Editar Puntajes de Publicación Jurídica</h2>
+        <form id="form-editar" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="id" id="modal-id">
+
+            <label for="modal-libro">Puntaje Libro:</label>
+            <input type="number" step="0.001" id="modal-libro" name="puntaje_libro" class="input" required>
+
+            <label for="modal-revista">Puntaje Revista:</label>
+            <input type="number" step="0.001" id="modal-revista" name="puntaje_revista" class="input" required>
+
+            <label for="modal-merito">Puntaje Mérito:</label>
+            <input type="number" step="0.001" id="modal-merito" name="puntaje_merito" class="input" required>
+
+            <input type="submit" value="Actualizar Puntajes" class="login-button">
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('modal-editar');
+    const cerrar = document.getElementById('cerrar-modal');
+    const form = document.getElementById('form-editar');
+
+    cerrar.onclick = () => modal.style.display = 'none';
+
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+
+    document.querySelectorAll('.btn-editar').forEach(boton => {
+        boton.addEventListener('click', () => {
+            const id = boton.dataset.id;
+            const libro = boton.dataset.libro;
+            const revista = boton.dataset.revista;
+            const merito = boton.dataset.merito;
+
+            document.getElementById('modal-id').value = id;
+            document.getElementById('modal-libro').value = libro;
+            document.getElementById('modal-revista').value = revista;
+            document.getElementById('modal-merito').value = merito;
+
+            form.action = `meritopj/editar_puntaje_publicacionjuridica/${id}/`;
+
+            modal.style.display = 'block';
+        });
+    });
+});
+</script>
+
+</body>
+</html>

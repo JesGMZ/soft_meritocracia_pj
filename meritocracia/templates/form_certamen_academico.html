@@ -6,23 +6,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'modal.css' %}">
     <title>Registro de Certamen Académico</title>
 </head>
 <body>
 
-    {% include 'navbar.html' %}  <!-- Se incluye el navbar -->
+    {% include 'navbar.html' %}
 
     <h2>Registro de Certamen Académico</h2>
 
     <div class="container">
-        <form action="{% url 'registrar_certamen_academico' %}" enctype="multipart/form-data" method="POST" class="form">
-
+        <form action="{% url 'registrar_certamen_academico' %}" method="POST" enctype="multipart/form-data" class="form">
             {% csrf_token %}
 
             <label>Juez:</label>
             <input type="text" value="{{ request.user.juez.nombres }} {{ request.user.juez.apellidos }}" disabled class="input">
 
-            <!-- Selección de Estudio de Perfeccionamiento (valor oculto) -->
+            <!-- Estudio de perfeccionamiento (oculto) -->
             <input type="hidden" id="estudio_perfeccionamiento" name="estudio_perfeccionamiento" value="5">
 
             <!-- Tipo de Participación -->
@@ -37,44 +37,106 @@
             <label for="nombre">Nombre del Certamen:</label>
             <input type="text" id="nombre" name="nombre" required class="input">
 
-            <!-- Tipo del Certamen (Nacional o Internacional) -->
-            <label for="tipo">Tipo de Certamen:</label>
-            <select id="tipo" name="tipo" required class="input" onchange="calcularPuntaje()">
+            <!-- Tipo del Certamen -->
+            <label for="tipo">Ámbito del Certamen:</label>
+            <select id="tipo" name="tipo" required class="input" onchange="actualizarPuntaje()">
                 <option value="Nacional">Nacional</option>
                 <option value="Internacional">Internacional</option>
             </select>
 
             <!-- Año del Certamen -->
             <label for="anio">Año del Certamen:</label>
-            <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025">
+            <input type="number" id="anio" name="anio" required class="input" onchange="actualizarPuntaje()">
 
+            <!-- Documento -->
             <label for="documento">Documento:</label>
-            <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
-            
-            <!-- Campo oculto para Puntaje (se calculará automáticamente) -->
-            <input type="hidden" id="puntaje" name="puntaje">
+            <input type="file" id="documento" name="documento" accept="application/pdf" class="input" required>
 
-            <!-- Mostrar Puntaje Calculado -->
+            <!-- Campo oculto para Puntaje -->
+            <input type="hidden" id="puntaje" name="puntaje" value="0.25">
+
+            <!-- Muestra el puntaje -->
             <p><strong>Puntaje Calculado:</strong> <span id="puntaje_mostrar">0.25</span></p>
+            
+            <!-- Mensaje de vigencia -->
+            <p id="mensaje_vigencia" style="color: red; display: none;">
+                Advertencia: Este certamen no cumple con la vigencia actual. Se registrará con puntaje 0.
+            </p>
 
             <input type="submit" value="Registrar Certamen Académico" class="login-button">
         </form>
     </div>
 
-    <script>
-        // Función para calcular el puntaje según el tipo de certamen
-        function calcularPuntaje() {
-            let tipo = document.getElementById("tipo").value;
-            let puntaje = (tipo === "Internacional") ? 0.5 : 0.25;
+    <!-- Modal de Error -->
+    <div id="modalError" class="modal" {% if error_modal %}style="display: block;"{% endif %}>
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal('modalError')">&times;</span>
+            <h3>Error en el registro</h3>
+            <p>{{ error_modal }}</p>
+            <button class="modal-button" onclick="cerrarModal('modalError')">Aceptar</button>
+        </div>
+    </div>
 
-            // Asignar el puntaje al campo oculto y mostrarlo en pantalla
+    <!-- Modal de Éxito -->
+    <div id="modalExito" class="modal" {% if exito_modal %}style="display: block;"{% endif %}>
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal('modalExito')">&times;</span>
+            <h3>Registro completado</h3>
+            <p>{{ exito_modal }}</p>
+            <button class="modal-button" onclick="cerrarModal('modalExito')">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        // Valores de vigencia (desde el backend)
+        const VIGENCIA_MINIMA = {{ vigencia.fecha_minima.year }};
+        const VIGENCIA_MAXIMA = {{ vigencia.fecha_maxima.year }};
+
+        function actualizarPuntaje() {
+            const tipo = document.getElementById("tipo").value;
+            const anio = parseInt(document.getElementById("anio").value) || 0;
+            
+            // Verificar vigencia
+            const cumpleVigencia = anio >= VIGENCIA_MINIMA && anio <= VIGENCIA_MAXIMA;
+            
+            // Mostrar/ocultar mensaje de vigencia
+            const mensajeVigencia = document.getElementById("mensaje_vigencia");
+            mensajeVigencia.style.display = cumpleVigencia ? "none" : "block";
+            
+            // Calcular puntaje (0 si no cumple vigencia)
+            let puntaje = 0;
+            if (cumpleVigencia) {
+                puntaje = (tipo === "Internacional") ? 0.5 : 0.25;
+            }
+            
+            // Actualizar valores
             document.getElementById("puntaje").value = puntaje;
             document.getElementById("puntaje_mostrar").innerText = puntaje;
         }
 
-        // Llamar a la función al cargar la página para mostrar el puntaje inicial
-        window.onload = calcularPuntaje;
-    </script>
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            
+            // Redirigir si es el modal de éxito
+            if (modalId === 'modalExito') {
+                window.location.href = "{% url 'ver_mis_registros' %}";
+            }
+        }
 
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+                if (event.target.id === 'modalExito') {
+                    window.location.href = "{% url 'ver_mis_registros' %}";
+                }
+            }
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarPuntaje();
+        });
+    </script>
 </body>
 </html>

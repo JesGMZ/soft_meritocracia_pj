@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Valores por Antigüedad</title>
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'tabla_valores.css' %}">
+    <link rel="stylesheet" href="{% static 'botones_vistas.css' %}">
+    <style>
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 60%;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <a href="{% url 'admin_view' %}" class="btn-volver">← Volver</a>
+
+    <h2>Registrar Valores por Antigüedad</h2>
+    <div class="container">
+        <form action="{% url 'registrar_puntaje_antiguedad' %}" method="POST">
+            {% csrf_token %}
+            <h4>Juez Superior:</h4>
+            <input type="number" name="js_puntaje_min" placeholder="Min Juez Superior" required class="input" step="0.001">
+            <input type="number" name="js_puntaje_max" placeholder="Max Juez Superior" required class="input" step="0.001">
+
+            <h4>Juez de Paz Letrado:</h4>
+            <input type="number" name="jp_puntaje_min" placeholder="Min Juez de Paz Letrado" required class="input" step="0.001">
+            <input type="number" name="jp_puntaje_max" placeholder="Max Juez de Paz Letrado" required class="input" step="0.001">
+
+            <h4>Juez Especializado:</h4>
+            <input type="number" name="je_puntaje_min" placeholder="Min Juez Especializado" required class="input" step="0.001">
+            <input type="number" name="je_puntaje_max" placeholder="Max Juez Especializado" required class="input" step="0.001">
+
+            <input type="submit" value="Registrar Valores" class="login-button">
+        </form>
+    </div>
+
+    <h2 style="margin-top: 40px;">Valores Registrados</h2>
+    <div class="container">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Juez Superior (min - max)</th>
+                    <th>JPL (min - max)</th>
+                    <th>Juez Especializado (min - max)</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registros %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.js_puntaje_min }} - {{ r.js_puntaje_max }}</td>
+                    <td>{{ r.jpl_puntaje_min }} - {{ r.jpl_puntaje_max }}</td>
+                    <td>{{ r.je_puntaje_min }} - {{ r.je_puntaje_max }}</td>
+                    <td>
+                        <button type="button" class="btn-editar"
+                            data-id="{{ r.id }}"
+                            data-jsmin="{{ r.js_puntaje_min }}"
+                            data-jsmax="{{ r.js_puntaje_max }}"
+                            data-JPLmin="{{ r.jpl_puntaje_min }}"
+                            data-JPLmax="{{ r.jpl_puntaje_max }}"
+                            data-jemin="{{ r.je_puntaje_min }}"
+                            data-jemax="{{ r.je_puntaje_max }}">
+                            Editar
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No hay registros.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-editar" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="cerrar-modal" class="close">&times;</span>
+            <h2>Editar Valores</h2>
+            <form id="form-editar" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id" id="modal-id">
+
+                <h4>Juez Superior:</h4>
+                <input type="number" id="modal-jsmin" name="js_puntaje_min" required class="input" step="0.001">
+                <input type="number" id="modal-jsmax" name="js_puntaje_max" required class="input" step="0.001">
+
+                <h4>Juez de Paz Letrado:</h4>
+                <input type="number" id="modal-jplmin" name="jpl_puntaje_min" required class="input" step="0.001">
+                <input type="number" id="modal-jplmax" name="jpl_puntaje_max" required class="input" step="0.001">
+
+                <h4>Juez Especializado:</h4>
+                <input type="number" id="modal-jemin" name="je_puntaje_min" required class="input" step="0.001">
+                <input type="number" id="modal-jemax" name="je_puntaje_max" required class="input" step="0.001">
+
+                <input type="submit" value="Actualizar Valores" class="login-button">
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('modal-editar');
+        const cerrar = document.getElementById('cerrar-modal');
+        const form = document.getElementById('form-editar');
+
+        cerrar.onclick = () => modal.style.display = 'none';
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        document.querySelectorAll('.btn-editar').forEach(boton => {
+            boton.addEventListener('click', () => {
+                const id = boton.dataset.id;
+                document.getElementById('modal-id').value = id;
+
+                document.getElementById('modal-jsmin').value = boton.dataset.jsmin;
+                document.getElementById('modal-jsmax').value = boton.dataset.jsmax;
+                document.getElementById('modal-jplmin').value = boton.dataset.JPLmin;
+                document.getElementById('modal-jplmax').value = boton.dataset.JPLmax;
+                document.getElementById('modal-jemin').value = boton.dataset.jemin;
+                document.getElementById('modal-jemax').value = boton.dataset.jemax;
+
+                form.action = `meritopj/editar_puntaje_antiguedad/${id}/`;
+
+                modal.style.display = 'block';
+            });
+        });
+    });
+    </script>
+</body>
+</html>

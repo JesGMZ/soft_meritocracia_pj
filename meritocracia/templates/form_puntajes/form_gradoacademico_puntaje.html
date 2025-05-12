@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Puntajes por Grado Académico</title>
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'tabla_vigencias.css' %}">
+    <link rel="stylesheet" href="{% static 'botones_vistas.css' %}">
+    <style>
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <a href="{% url 'admin_view' %}" class="btn-volver">← Volver</a>
+
+    <h2>Registrar Puntaje por Grado Académico</h2>
+
+    <div class="container">
+        <form action="{% url 'registrar_puntaje_gradoacademico' %}" method="POST">
+            {% csrf_token %}
+
+            <label for="doj_puntaje">Doctorado Jurídico:</label>
+            <input type="number" step="0.001" name="doj_puntaje" required class="input">
+
+            <label for="donj_puntaje">Doctorado No Jurídico:</label>
+            <input type="number" step="0.001" name="donj_puntaje" required class="input">
+
+            <label for="maj_puntaje">Maestría Jurídica:</label>
+            <input type="number" step="0.001" name="maj_puntaje" required class="input">
+
+            <label for="manj_puntaje">Maestría No Jurídica:</label>
+            <input type="number" step="0.001" name="manj_puntaje" required class="input">
+
+            <label for="tinj_puntaje">Título No Jurídico:</label>
+            <input type="number" step="0.001" name="tinj_puntaje" required class="input">
+
+            <input type="submit" value="Registrar Puntaje" class="login-button">
+        </form>
+    </div>
+
+    <h2 style="margin-top: 40px;">Puntajes Registrados</h2>
+    <div class="container">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Doctorado No Jurídico</th>
+                    <th>Maestría Jurídica</th>
+                    <th>Maestría No Jurídica</th>
+                    <th>Título No Jurídico</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registros %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.donj_puntaje }}</td>
+                    <td>{{ r.maj_puntaje }}</td>
+                    <td>{{ r.manj_puntaje }}</td>
+                    <td>{{ r.tinj_puntaje }}</td>
+                    <td>
+                        <button type="button"
+                                class="btn-editar"
+                                data-id="{{ r.id }}"
+                                data-donj="{{ r.donj_puntaje }}"
+                                data-maj="{{ r.maj_puntaje }}"
+                                data-manj="{{ r.manj_puntaje }}"
+                                data-tinj="{{ r.tinj_puntaje }}">
+                            Editar
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No hay registros.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de edición -->
+    <div id="modal-editar" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="cerrar-modal" class="close">&times;</span>
+            <h2>Editar Puntaje</h2>
+            <form id="form-editar" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id" id="modal-id">
+
+                <label for="modal-doj">Doctorado Jurídico:</label>
+                <input type="number" step="0.001" id="modal-donj" name="doj_puntaje" class="input" required>
+
+                <label for="modal-donj">Doctorado No Jurídico:</label>
+                <input type="number" step="0.001" id="modal-donj" name="donj_puntaje" class="input" required>
+
+                <label for="modal-maj">Maestría Jurídica:</label>
+                <input type="number" step="0.001" id="modal-maj" name="maj_puntaje" class="input" required>
+
+                <label for="modal-manj">Maestría No Jurídica:</label>
+                <input type="number" step="0.001" id="modal-manj" name="manj_puntaje" class="input" required>
+
+                <label for="modal-tinj">Título No Jurídico:</label>
+                <input type="number" step="0.001" id="modal-tinj" name="tinj_puntaje" class="input" required>
+
+                <input type="submit" value="Actualizar Puntaje" class="login-button">
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('modal-editar');
+        const cerrar = document.getElementById('cerrar-modal');
+        const form = document.getElementById('form-editar');
+
+        cerrar.onclick = () => modal.style.display = 'none';
+
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        document.querySelectorAll('.btn-editar').forEach(boton => {
+            boton.addEventListener('click', () => {
+                const id = boton.dataset.id;
+                const donj = boton.dataset.donj;
+                const maj = boton.dataset.maj;
+                const manj = boton.dataset.manj;
+                const tinj = boton.dataset.tinj;
+
+                document.getElementById('modal-id').value = id;
+                document.getElementById('modal-donj').value = donj;
+                document.getElementById('modal-maj').value = maj;
+                document.getElementById('modal-manj').value = manj;
+                document.getElementById('modal-tinj').value = tinj;
+
+                form.action = `/meritopj/editar_puntaje_gradoacademico/${id}/`;
+
+                modal.style.display = 'block';
+            });
+        });
+    });
+    </script>
+
+</body>
+</html>

@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'modal.css' %}">
     <title>Registro de Estudio de Maestria</title>
 </head>
 <body>
@@ -32,7 +33,7 @@
 
             <!-- Año de obtención -->
             <label for="anio">Año de Obtención:</label>
-            <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025">
+            <input type="number" id="anio" name="anio" required class="input">
 
             <!-- Nota -->
             <label for="nota">Nota:</label>
@@ -51,6 +52,15 @@
         </form>
     </div>
 
+    <div id="modalError" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
+            <h3>Fecha Inválida</h3>
+            <p>{{ error_modal }}</p>
+            <button class="modal-button" onclick="cerrarModal()">Aceptar</button>
+        </div>
+    </div>
+
     <script>
         function calcularPuntaje() {
             let nota = parseFloat(document.getElementById("nota").value);
@@ -65,6 +75,15 @@
             // Asignar el puntaje al campo oculto y mostrarlo en pantalla
             document.getElementById("puntaje").value = puntaje;
             document.getElementById("puntaje_mostrar").innerText = puntaje;
+
+            function cerrarModal() {
+                document.getElementById('modalError').style.display = 'none';
+            }
+            {% if error_modal %}
+            window.onload = function() {
+                document.getElementById('modalError').style.display = 'block';
+            }
+            {% endif %}
         }
     </script>
 

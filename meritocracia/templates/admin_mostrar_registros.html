@@ -6,12 +6,14 @@
     <title>Buscar Juez y Detalles</title>
     <link rel="stylesheet" href="{% static 'formulario.css' %}">
     <link rel="stylesheet" href="{% static 'tablas.css' %}">
- 
+    <link rel="stylesheet" href="{% static 'botones_vistas.css' %}">
+
 </head>
 <body>
 
     {% include 'navbar.html' %}
 
+    <a href="{% url 'admin_view' %}" class="btn-volver">← Volver</a>
     <h2>Consultar Registros</h2>
 
     <div class="container">

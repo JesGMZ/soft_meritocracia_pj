@@ -25,11 +25,6 @@
             <span>Registro de Grados Académicos</span>
         </a>
 
-        <a href="{% url 'registrar_antiguedad' %}" class="card">
-            <img src="{% static 'icons/icon_antiguedad.png' %}" alt="Antigüedad">
-            <span>Registro de Antigüedad</span>
-        </a>
-
         <a href="{% url 'registrar_estudio_perfeccionamiento' %}" class="card">
             <img src="{% static 'icons/icon_perfeccionamiento.png' %}" alt="Estudio de Perfeccionamiento">
             <span>Registro de Estudios de Perfeccionamiento</span>
@@ -48,6 +43,12 @@
         <a href="{% url 'registrar_docencia' %}" class="card">
             <img src="{% static 'icons/icon_docencia.png' %}" alt="Docencia">
             <span>Registro de Docencia</span>
+        </a>
+
+        <a href="{% url 'ver_mis_registros' %}" class="card">
+            {% csrf_token %}
+            <img src="{% static 'icons/icon_carpeta.png' %}" alt="Registros">
+            <span>Tabla de Registros</span>
         </a>
 
     </div>

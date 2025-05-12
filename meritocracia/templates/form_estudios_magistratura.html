@@ -1,19 +1,72 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'formulario.css' %}">
-    <title>Registrar Estudios de la Academia de Magistratura</title>
+    <title>Registros</title>
+    <style>
+        /* Estilos para el modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .modal-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        
+        .modal-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
 
-    {% include 'navbar.html' %} 
-
-    <h2>Registrar Estudios de la Academia de Magistratura</h2>
+    {% include 'navbar.html' %}
 
     <div class="container">
+
+        <h2>Registrar Estudios de la Academia de Magistratura</h2>
+        <button class="modal-button" onclick="openModal()">Registrar Antigüedad</button>
         <form 
             action="{% url 'registrar_estudios_magistratura' %}" 
             method="POST" class="form" enctype="multipart/form-data">
@@ -26,17 +79,65 @@
             <input type="text" id="programa" name="programa" required class="input">
         
             <label for="anio">Año de Estudio:</label>
-            <input type="number" id="anio" name="anio" required class="input" min="2019" max="2025">
+            <input type="number" id="anio" name="anio" required class="input">
+
+            
         
             <label for="nota">Nota:</label>
             <input type="number" id="nota" name="nota" step="0.1" min="0" max="20" required class="input">
         
             <label for="documento">Documento (PDF):</label>
             <input type="file" id="documento" name="documento" accept="application/pdf" class="input">
-        
+    
             <input type="submit" value="Registrar Estudios de Magistratura" class="login-button">
         </form>
+
     </div>
+
+    <!-- Modal de Antigüedad (oculto inicialmente) -->
+    <div id="antiguedadModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            
+            <h2>Registro de Antigüedad</h2>
+            <form action="{% url 'registrar_antiguedad' %}" method="POST" class="form">
+                {% csrf_token %}
+                
+                <label>Juez:</label>
+                <input type="text" value="{{ request.user.juez.nombres }} {{ request.user.juez.apellidos }}" disabled class="input">
+                
+                <label for="fecha_inicio">Fecha de Inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" required class="input">
+            
+                <label for="fecha_fin">Fecha de Finalización:</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="input">
+            
+                <input type="hidden" id="puntaje" name="puntaje" value="1">
+            
+                <input type="submit" value="Registrar Antigüedad" class="login-button">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Función para abrir el modal
+        function openModal() {
+            document.getElementById('antiguedadModal').style.display = 'block';
+        }
+        
+        // Función para cerrar el modal
+        function closeModal() {
+            document.getElementById('antiguedadModal').style.display = 'none';
+        }
+        
+        // Cerrar el modal si se hace clic fuera del contenido
+        window.onclick = function(event) {
+            const modal = document.getElementById('antiguedadModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
 
 </body>
 </html>

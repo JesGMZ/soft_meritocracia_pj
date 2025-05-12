@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar Registros</title>
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'tablas.css' %}">
+    <link rel="stylesheet" href="{% static 'style_tables.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'botones_vistas.css' %}">
+
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <a href="{% url 'juez_dashboard' %}" class="btn-volver">← Volver</a>
+    <h2>Consultar Registros</h2>
+
+    <div class="container">
+
+    {% if registros %}
+        <h2>Registros actuales</h2>
+
+        <table class="responsive-table">
+            <thead>
+                <tr>
+                    <th>Sección</th>
+                    <th>Detalle</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nombre</td>
+                    <td>{{ registros.juez.nombres }} {{ registros.juez.apellidos }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Fecha de Nacimiento</td>
+                    <td>{{ registros.juez.fecha_nacimiento }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Cargo</td>
+                    <td>{{ registros.juez.cargo }}</td>
+                    <td></td>
+                </tr>
+
+                {% for antiguedad in registros.antiguedad %}
+                    <tr>
+                        <td>Antigüedad</td>
+                        <td>{{ antiguedad.fecha_inicio }} - {{ antiguedad.fecha_fin }}</td>
+                        <td><a href="#">Examinar</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Antigüedad</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for grado in registros.grado_academico %}
+                    <tr>
+                        <td>Grado Académico</td>
+                        <td>{{ grado.tipo }} - {{ grado.titulo_gd }}</td>
+                        <td>
+                            {% if grado.id_gradoacademico %}
+                                <a href="{% url 'editar_grado_academico' grado.id_gradoacademico %}">Examinar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Grado Académico</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for estudio in registros.estudios_magistratura %}
+                    <tr>
+                        <td>Estudios de Magistratura</td>
+                        <td>{{ estudio.programa }} - {{ estudio.anio }}</td>
+                        <td>
+                            {% if estudio.id_estudiomagistratura %}
+                                <a href="{% url 'editar_estudios_magistratura' estudio.id_estudiomagistratura %}">Examinar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Estudios de Magistratura</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for doctorado in registros.doctorados %}
+                    <tr>
+                        <td>Doctorado</td>
+                        <td>{{ doctorado.nombre }} - {{ doctorado.anio }}</td>
+                        <td>
+                            {% if doctorado.id_estudiodoctorado %}
+                                <a href="{% url 'editar_doctorado' doctorado.id_estudiodoctorado %}">Examinar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Doctorado</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for maestria in registros.maestrias %}
+                    <tr>
+                        <td>Maestría</td>
+                        <td>{{ maestria.nombre }} - {{ maestria.anio }}</td>
+                        <td>
+                            {% if maestria.id_estudiomaestria %}
+                                <a href="{% url 'editar_maestria' maestria.id_estudiomaestria %}">Examinar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Maestría</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for pasantia in registros.pasantias %}
+                    <tr>
+                        <td>Pasantía</td>
+                        <td>{{ pasantia.nombre }} ({{ pasantia.tipo }}) - {{ pasantia.anio }}</td>
+                        <td>
+                            {% if pasantia.id_pasantia %}
+                                <a href="{% url 'editar_pasantia' pasantia.id_pasantia %}">Examinar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Pasantía</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for curso in registros.cursos_especializacion %}
+                    <tr>
+                        <td>Curso de Especialización</td>
+                        <td>{{ curso.nombre }} - {{ curso.anio }}</td>
+                        <td>
+                            <a href="{% url 'editar_curso_especializacion' curso.id_cursoespecializacion %}">Examinar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Curso de Especialización</td><td>No hay cursos registrados</td><td></td></tr>
+                {% endfor %}
+
+                {% for certamen in registros.certamenes_academicos %}
+                    <tr>
+                        <td>Certamen Académico</td>
+                        <td>{{ certamen.nombre }} - {{ certamen.tipo_participacion }} ({{ certamen.tipo }}) - {{ certamen.anio }}</td>
+                        <td>
+                            <a href="{% url 'editar_certamen_academico' certamen.id_certamenacademico %}">Examinar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Certamen Académico</td><td>No hay certámenes registrados</td><td></td></tr>
+                {% endfor %}
+
+                {% for evento in registros.eventos_academicos %}
+                    <tr>
+                        <td>Evento Académico</td>
+                        <td>{{ evento.nombre }} - {{ evento.anio }}</td>
+                        <td>
+                            <a href="{% url 'editar_evento_academico' evento.id_eventoacademico %}">Examinar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Evento Académico</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for ofimatica in registros.ofimatica %}
+                    <tr>
+                        <td>Estudio de Ofimática</td>
+                        <td>{{ ofimatica.estudio }} - {{ ofimatica.nivel }} - {{ ofimatica.anio }}</td>
+                        <td>
+                            <a href="{% url 'editar_estudio_ofimatica' ofimatica.id_ofimatica %}">Examinar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td>Estudio de Ofimática</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for idiomas in registros.idiomas %}
+                <tr>
+                    <td>Estudio de Ofimática</td>
+                    <td>{{ idiomas.estudio }} - {{ idiomas.nivel }} - {{ idiomas.anio }}</td>
+                    <td>
+                        <a href="{% url 'editar_estudio_idiomas' ofimatica.id_idiomas %}">Examinar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr><td>Estudio de Idiomas</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for docencia in registros.docencia %}
+                <tr>
+                    <td>Estudio de Ofimática</td>
+                    <td>{{ docencia.universidad }} - {{ docencia.curso }}</td>
+                    <td>
+                        <a href="{% url 'editar_docencia' docencia.id_docencia %}">Examinar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr><td>Estudio de Docencia</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    {% elif error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

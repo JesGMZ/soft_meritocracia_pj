@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestionar Vigencias</title>
+    <link rel="stylesheet" href="{% static 'formulario.css' %}">
+    <link rel="stylesheet" href="{% static 'tabla_vigencias.css' %}">
+    <link rel="stylesheet" href="{% static 'botones_vistas.css' %}">
+
+    <style>
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <a href="{% url 'admin_view' %}" class="btn-volver">← Volver</a>
+
+    <h2>Registrar Vigencia</h2>
+
+    <div class="container">
+        <form action="{% url 'crear_valores' %}" method="POST">
+            {% csrf_token %}
+            <label for="fechaminima">Fecha Mínima:</label>
+            <input type="date" id="fechaminima" name="fechaminima" required class="input">
+
+            <label for="fechamaxima">Fecha Máxima:</label>
+            <input type="date" id="fechamaxima" name="fechamaxima" required class="input">
+
+            <label for="estado">Estado:</label>
+            <select id="estado" name="estado" class="input" required>
+                <option value="Activo">ACTIVO</option>
+                <option value="Inactivo">INACTIVO</option>
+            </select>
+
+            <input type="submit" value="Registrar Vigencia" class="login-button">
+        </form>
+    </div>
+
+    <h2 style="margin-top: 40px;">Vigencias Registradas</h2>
+    <div class="container">
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha Mínima</th>
+                    <th>Fecha Máxima</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in vigencias %}
+                <tr>
+                    <td>{{ v.idvigencia }}</td>
+                    <td>{{ v.fecha_minima }}</td>
+                    <td>{{ v.fecha_maxima }}</td>
+                    <td>{{ v.estado }}</td>
+                    <td>
+                        <button type="button"
+                                class="btn-editar"
+                                data-id="{{ v.idvigencia }}"
+                                data-fecha-min="{{ v.fecha_minima|date:'Y-m-d' }}"
+                                data-fecha-max="{{ v.fecha_maxima|date:'Y-m-d' }}"
+                                data-estado="{{ v.estado }}">
+                            Editar
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No hay vigencias registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de edición -->
+    <div id="modal-editar" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="cerrar-modal" class="close">&times;</span>
+            <h2>Editar Vigencia</h2>
+            <form id="form-editar" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="idvigencia" id="modal-idvigencia">
+
+                <label for="modal-fechaminima">Fecha Mínima:</label>
+                <input type="date" id="modal-fechaminima" name="fechaminima" class="input" required>
+
+                <label for="modal-fechamaxima">Fecha Máxima:</label>
+                <input type="date" id="modal-fechamaxima" name="fechamaxima" class="input" required>
+
+                <label for="modal-estado">Estado:</label>
+                <select id="modal-estado" name="estado" class="input" required>
+                    <option value="Activo">ACTIVO</option>
+                    <option value="Inactivo">INACTIVO</option>
+                </select>
+
+                <input type="submit" value="Actualizar Vigencia" class="login-button">
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('modal-editar');
+        const cerrar = document.getElementById('cerrar-modal');
+        const form = document.getElementById('form-editar');
+
+        // Cerrar modal con la X
+        cerrar.onclick = () => modal.style.display = 'none';
+
+        // Cerrar al hacer clic fuera del modal
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Botones de edición
+        document.querySelectorAll('.btn-editar').forEach(boton => {
+            boton.addEventListener('click', () => {
+                const id = boton.dataset.id;
+                const fechaMin = boton.dataset.fechaMin;
+                const fechaMax = boton.dataset.fechaMax;
+                const estado = boton.dataset.estado;
+
+                document.getElementById('modal-idvigencia').value = id;
+                document.getElementById('modal-fechaminima').value = fechaMin;
+                document.getElementById('modal-fechamaxima').value = fechaMax;
+                document.getElementById('modal-estado').value = estado;
+
+                form.action = `/meritopj/vigencias/editar/${id}/`;
+
+                modal.style.display = 'block';
+            });
+        });
+    });
+    </script>
+
+</body>
+</html>

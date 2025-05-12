@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import admin_view, buscar_juez, editar_certamen_academico, editar_curso_especializacion, editar_distincion, editar_docencia, editar_doctorado, editar_estudio_idiomas, editar_estudio_ofimatica, editar_estudios_magistratura, editar_evento_academico, editar_grado_academico, editar_maestria, editar_pasantia, editar_publicacion_juridica, juez_dashboard, login_view, logout_view, registrar_certamen_academico, registrar_curso_especializacion, registrar_demerito, registrar_distincion, registrar_docencia, registrar_doctorado, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_pasantia, registrar_publicacion_juridica
+from .views import admin_view, buscar_juez, crear_valores, editar_antiguedad_valor_puntaje, editar_certamen_academico, editar_certamenacademico_valor_puntaje, editar_curso_especializacion, editar_cursoespecializacion_valor_puntaje, editar_distincion, editar_distincion_valor_puntaje, editar_docencia, editar_docencia_valor_puntaje, editar_doctorado, editar_doctorado_valor_puntaje, editar_estudio_idiomas, editar_estudio_ofimatica, editar_estudios_magistratura, editar_evento_academico, editar_eventoacademico_valor_puntaje, editar_grado_academico, editar_gradoacademico_valor_puntaje, editar_idiomas_valor_puntaje, editar_maestria, editar_maestria_valor_puntaje, editar_magistratura_valor_puntaje, editar_ofimatica_valor_puntaje, editar_pasantia, editar_pasantia_valor_puntaje, editar_publicacion_juridica, editar_publicacionjuridica_valor_puntaje, editar_valores, eliminar_antiguedad_valor_puntaje, eliminar_certamenacademico_valor_puntaje, eliminar_cursoespecializacion_valor_puntaje, eliminar_distincion_valor_puntaje, eliminar_docencia_valor_puntaje, eliminar_doctorado_valor_puntaje, eliminar_eventoacademico_valor_puntaje, eliminar_gradoacademico_valor_puntaje, eliminar_idiomas_valor_puntaje, eliminar_maestria_valor_puntaje, eliminar_magistratura_valor_puntaje, eliminar_ofimatica_valor_puntaje, eliminar_pasantia_valor_puntaje, eliminar_publicacionjuridica_valor_puntaje, juez_dashboard,login_view, logout_view, menu_puntajes, mostrar_antiguedad_valor_puntaje, mostrar_certamenacademico_valor_puntaje, mostrar_cursoespecializacion_valor_puntaje, mostrar_distincion_valor_puntaje, mostrar_docencia_valor_puntaje, mostrar_doctorado_valor_puntaje, mostrar_eventoacademico_valor_puntaje, mostrar_gradoacademico_valor_puntaje, mostrar_idiomas_valor_puntaje, mostrar_maestria_valor_puntaje, mostrar_magistratura_valor_puntaje, mostrar_ofimatica_valor_puntaje, mostrar_pasantia_valor_puntaje, mostrar_publicacionjuridica_valor_puntaje, mostrar_valores, registrar_antiguedad_valor_puntaje, registrar_certamen_academico, registrar_certamenacademico_valor_puntaje, registrar_curso_especializacion, registrar_cursoespecializacion_valor_puntaje, registrar_demerito, registrar_distincion, registrar_distincion_valor_puntaje, registrar_docencia, registrar_docencia_valor_puntaje, registrar_doctorado, registrar_doctorado_valor_puntaje, registrar_estudio_idiomas, registrar_estudio_ofimatica, registrar_estudio_perfeccionamiento, registrar_evento_academico, registrar_eventoacademico_valor_puntaje, registrar_gradoacademico_valor_puntaje, registrar_idiomas_valor_puntaje, registrar_juez,meritopj,registrar_antiguedad,registrar_grado_academico,registrar_estudios_magistratura, registrar_maestria, registrar_maestria_valor_puntaje, registrar_magistratura_valor_puntaje, registrar_ofimatica_valor_puntaje, registrar_pasantia, registrar_pasantia_valor_puntaje, registrar_publicacion_juridica, registrar_publicacionjuridica_valor_puntaje, ver_mis_registros
 
 urlpatterns = [
     path('', meritopj),
+    path('menu_puntajes/', menu_puntajes, name='menu_puntajes'),
     path('login/', login_view, name='login_view'),
     path('logout_pj/', logout_view, name='logout_view'),
     path('admin-view/', admin_view, name='admin_view'),
@@ -37,6 +38,71 @@ urlpatterns = [
     path('editar_publicacion_juridica/<int:id_publicacionjuridica>/', editar_publicacion_juridica, name='editar_publicacion_juridica'),
     path('editar_distincion/<int:id_distincion>/', editar_distincion, name='editar_distincion'),
     path('editar_docencia/<int:id_docencia>/', editar_docencia, name='editar_docencia'),
-    path("registrar_demerito/", registrar_demerito, name="registrar_demerito")
+    path("registrar_demerito/", registrar_demerito, name="registrar_demerito"),
+    path('mis-registros/', ver_mis_registros, name='ver_mis_registros'),
+    path('vigencias/', mostrar_valores, name='mostrar_valores'),
+    path('vigencias/crear/', crear_valores, name='crear_valores'),
+    path('vigencias/editar/<int:idvigencia>/', editar_valores, name='editar_valores'),
 
+    path('registrar_puntaje_antiguedad/', registrar_antiguedad_valor_puntaje, name='registrar_puntaje_antiguedad'),
+    path('registrar_puntaje_gradoacademico/', registrar_gradoacademico_valor_puntaje, name='registrar_puntaje_gradoacademico'),
+    path('registrar_puntaje_magistratura/', registrar_magistratura_valor_puntaje, name='registrar_puntaje_magistratura'),
+    path('registrar_puntaje_doctorado/', registrar_doctorado_valor_puntaje, name='registrar_puntaje_doctorado'),
+    path('registrar_puntaje_maestria/', registrar_maestria_valor_puntaje, name='registrar_puntaje_maestria'),
+    path('registrar_puntaje_pasantia/', registrar_pasantia_valor_puntaje, name='registrar_puntaje_pasantia'),
+    path('registrar_puntaje_cursoespecializacion/', registrar_cursoespecializacion_valor_puntaje, name='registrar_puntaje_cursoespecializacion'),
+    path('registrar_puntaje_certamenacademico/', registrar_certamenacademico_valor_puntaje, name='registrar_puntaje_certamenacademico'),
+    path('registrar_puntaje_eventoacademico/', registrar_eventoacademico_valor_puntaje, name='registrar_puntaje_eventoacademico'),
+    path('registrar_puntaje_ofimatica/', registrar_ofimatica_valor_puntaje, name='registrar_puntaje_ofimatica'),
+    path('registrar_puntaje_idiomas/', registrar_idiomas_valor_puntaje, name='registrar_puntaje_idiomas'),
+    path('registrar_puntaje_publicacionjuridica/', registrar_publicacionjuridica_valor_puntaje, name='registrar_puntaje_publicacionjuridica'),
+    path('registrar_puntaje_distincion/', registrar_distincion_valor_puntaje, name='registrar_puntaje_distincion'),
+    path('registrar_puntaje_docencia/', registrar_docencia_valor_puntaje, name='registrar_puntaje_docencia'),
+
+    # Editar
+    path('editar_puntaje_antiguedad/<int:id>/', editar_antiguedad_valor_puntaje, name='editar_puntaje_antiguedad'),
+    path('editar_puntaje_gradoacademico/<int:id>/', editar_gradoacademico_valor_puntaje, name='editar_puntaje_gradoacademico'),
+    path('editar_puntaje_magistratura/<int:id>/', editar_magistratura_valor_puntaje, name='editar_puntaje_magistratura'),
+    path('editar_puntaje_doctorado/<int:id>/', editar_doctorado_valor_puntaje, name='editar_puntaje_doctorado'),
+    path('editar_puntaje_maestria/<int:id>/', editar_maestria_valor_puntaje, name='editar_puntaje_maestria'),
+    path('editar_puntaje_pasantia/<int:id>/', editar_pasantia_valor_puntaje, name='editar_puntaje_pasantia'),
+    path('editar_puntaje_cursoespecializacion/<int:id>/', editar_cursoespecializacion_valor_puntaje, name='editar_puntaje_cursoespecializacion'),
+    path('editar_puntaje_certamenacademico/<int:id>/', editar_certamenacademico_valor_puntaje, name='editar_puntaje_certamenacademico'),
+    path('editar_puntaje_eventoacademico/<int:id>/', editar_eventoacademico_valor_puntaje, name='editar_puntaje_eventoacademico'),
+    path('editar_puntaje_ofimatica/<int:id>/', editar_ofimatica_valor_puntaje, name='editar_puntaje_ofimatica'),
+    path('editar_puntaje_idiomas/<int:id>/', editar_idiomas_valor_puntaje, name='editar_puntaje_idiomas'),
+    path('editar_puntaje_publicacionjuridica/<int:id>/', editar_publicacionjuridica_valor_puntaje, name='editar_puntaje_publicacionjuridica'),
+    path('editar_puntaje_distincion/<int:id>/', editar_distincion_valor_puntaje, name='editar_puntaje_distincion'),
+    path('editar_puntaje_docencia/<int:id>/', editar_docencia_valor_puntaje, name='editar_puntaje_docencia'),
+
+    # Eliminar
+    path('eliminar_puntaje_antiguedad/<int:id>/', eliminar_antiguedad_valor_puntaje, name='eliminar_puntaje_antiguedad'),
+    path('eliminar_puntaje_gradoacademico/<int:id>/', eliminar_gradoacademico_valor_puntaje, name='eliminar_puntaje_gradoacademico'),
+    path('eliminar_puntaje_magistratura/<int:id>/', eliminar_magistratura_valor_puntaje, name='eliminar_puntaje_magistratura'),
+    path('eliminar_puntaje_doctorado/<int:id>/', eliminar_doctorado_valor_puntaje, name='eliminar_puntaje_doctorado'),
+    path('eliminar_puntaje_maestria/<int:id>/', eliminar_maestria_valor_puntaje, name='eliminar_puntaje_maestria'),
+    path('eliminar_puntaje_pasantia/<int:id>/', eliminar_pasantia_valor_puntaje, name='eliminar_puntaje_pasantia'),
+    path('eliminar_puntaje_cursoespecializacion/<int:id>/', eliminar_cursoespecializacion_valor_puntaje, name='eliminar_puntaje_cursoespecializacion'),
+    path('eliminar_puntaje_certamenacademico/<int:id>/', eliminar_certamenacademico_valor_puntaje, name='eliminar_puntaje_certamenacademico'),
+    path('eliminar_puntaje_eventoacademico/<int:id>/', eliminar_eventoacademico_valor_puntaje, name='eliminar_puntaje_eventoacademico'),
+    path('eliminar_puntaje_ofimatica/<int:id>/', eliminar_ofimatica_valor_puntaje, name='eliminar_puntaje_ofimatica'),
+    path('eliminar_puntaje_idiomas/<int:id>/', eliminar_idiomas_valor_puntaje, name='eliminar_puntaje_idiomas'),
+    path('eliminar_puntaje_publicacionjuridica/<int:id>/', eliminar_publicacionjuridica_valor_puntaje, name='eliminar_puntaje_publicacionjuridica'),
+    path('eliminar_puntaje_distincion/<int:id>/', eliminar_distincion_valor_puntaje, name='eliminar_puntaje_distincion'),
+    path('eliminar_puntaje_docencia/<int:id>/', eliminar_docencia_valor_puntaje, name='eliminar_puntaje_docencia'),
+
+    path('mostrar_puntaje_antiguedad/', mostrar_antiguedad_valor_puntaje, name='mostrar_puntaje_antiguedad'),
+    path('mostrar_puntaje_gradoacademico/', mostrar_gradoacademico_valor_puntaje, name='mostrar_puntaje_gradoacademico'),
+    path('mostrar_puntaje_magistratura/', mostrar_magistratura_valor_puntaje, name='mostrar_puntaje_magistratura'),
+    path('mostrar_puntaje_doctorado/', mostrar_doctorado_valor_puntaje, name='mostrar_puntaje_doctorado'),
+    path('mostrar_puntaje_maestria/', mostrar_maestria_valor_puntaje, name='mostrar_puntaje_maestria'),
+    path('mostrar_puntaje_pasantia/', mostrar_pasantia_valor_puntaje, name='mostrar_puntaje_pasantia'),
+    path('mostrar_puntaje_cursoespecializacion/', mostrar_cursoespecializacion_valor_puntaje, name='mostrar_puntaje_cursoespecializacion'),
+    path('mostrar_puntaje_certamenacademico/', mostrar_certamenacademico_valor_puntaje, name='mostrar_puntaje_certamenacademico'),
+    path('mostrar_puntaje_eventoacademico/', mostrar_eventoacademico_valor_puntaje, name='mostrar_puntaje_eventoacademico'),
+    path('mostrar_puntaje_ofimatica/', mostrar_ofimatica_valor_puntaje, name='mostrar_puntaje_ofimatica'),
+    path('mostrar_puntaje_idiomas/', mostrar_idiomas_valor_puntaje, name='mostrar_puntaje_idiomas'),
+    path('mostrar_puntaje_publicacionjuridica/', mostrar_publicacionjuridica_valor_puntaje, name='mostrar_puntaje_publicacionjuridica'),
+    path('mostrar_puntaje_distincion/', mostrar_distincion_valor_puntaje, name='mostrar_puntaje_distincion'),
+    path('mostrar_puntaje_docencia/', mostrar_docencia_valor_puntaje, name='mostrar_puntaje_docencia')
 ]
