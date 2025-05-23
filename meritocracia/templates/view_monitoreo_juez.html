@@ -190,14 +190,39 @@
 
                 {% for docencia in registros.docencia %}
                 <tr>
-                    <td>Estudio de Ofimática</td>
+                    <td>Docencia</td>
                     <td>{{ docencia.universidad }} - {{ docencia.curso }}</td>
                     <td>
                         <a href="{% url 'editar_docencia' docencia.id_docencia %}">Examinar</a>
                     </td>
                 </tr>
                 {% empty %}
-                    <tr><td>Estudio de Docencia</td><td>No disponible</td><td></td></tr>
+                    <tr><td>Docencia</td><td>No disponible</td><td></td></tr>
+                    <tr><td>Docencia</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for publicacion in registros.publicaciones %}
+                <tr>
+                    <td>Publicación Juridica</td>
+                    <td>{{ publicacion.nombre }} - {{ publicacion.tipo }}</td>
+                    <td>
+                        <a href="{% url 'editar_publicacion_juridica' publicacion.id_publicacionjuridica %}">Examinar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr><td>Publicacion Juridica</td><td>No disponible</td><td></td></tr>
+                {% endfor %}
+
+                {% for distincion in registros.distinciones %}
+                <tr>
+                    <td>Disticiones</td>
+                    <td>{{ distincion.nombre }} - {{ distincion.anio }}</td>
+                    <td>
+                        <a href="{% url 'editar_distincion' distincion.id_distincion %}">Examinar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                    <tr><td>Distinciones</td><td>No disponible</td><td></td></tr>
                 {% endfor %}
 
             </tbody>

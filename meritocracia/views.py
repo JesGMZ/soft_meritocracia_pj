@@ -675,7 +675,7 @@ def registrar_pasantia(request):
         messages.success(request, mensaje_exito)
         return redirect('ver_mis_registros')
 
-    return render(request, "form_pasantia_puntaje.html", {
+    return render(request, "form_pasantia.html", {
         "estudios_perfeccionamiento": estudios_perfeccionamiento
     })
 
@@ -958,7 +958,7 @@ def registrar_evento_academico(request):
         )
 
         messages.success(request, mensaje_exito)
-        return redirect("form_evento_academico")  # Asegúrate de que el nombre de la URL esté definido en urls.py
+        return redirect("ver_mis_registros")  # Asegúrate de que el nombre de la URL esté definido en urls.py
 
     return render(request, "form_evento_academico.html", {
         "estudios_perfeccionamiento": estudios_perfeccionamiento,
@@ -1037,7 +1037,7 @@ def registrar_estudio_ofimatica(request):
             puntaje=puntaje,
             documento=documento_url,
             estado='PENDIENTE',
-            idvigencia=vigencia
+            vigencia=vigencia
         )
 
         return redirect('ver_mis_registros')
@@ -1117,7 +1117,7 @@ def registrar_estudio_idiomas(request):
             puntaje=puntaje,
             documento=documento_url,
             estado='PENDIENTE',
-            idvigencia=vigencia
+            vigencia=vigencia
         )
 
         return redirect('ver_mis_registros')
